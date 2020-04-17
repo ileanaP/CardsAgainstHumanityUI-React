@@ -73,10 +73,7 @@ function GameBox(props) {
                 <Grid container justify="flex-start" spacing={1} className={classes.btnPadding}>
                     <Grid item>
                         <Box pt={2}>
-                            <Button variant="contained" className={classes.btnRoot}>
-                                Enter Game
-                            </Button>
-                            <Btn bgColor={"green"}/>
+                            <Btn bgColor={"purple"} text={"Enter Game"}/>
                         </Box>
                     </Grid>
                 </Grid>

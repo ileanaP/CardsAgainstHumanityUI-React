@@ -4,24 +4,29 @@ import { withStyles } from '@material-ui/core/styles';
 
 
 const styles = {
-    indigoBg: {
-        backgroundColor: 'indigo',
+    btn: {
+        marginBottom: '24px',
+        padding: '16px',
+        width: 200,
+        fontWeight: 'bold'
     },
-    btnRoot: {
-        backgroundColor: 'purple',
-        color: 'whitesmoke',
+    btnHover: {
         '&:hover': {
-            backgroundColor: 'white',
+            backgroundColor: 'rgba(0,0,0,0)',
             color: 'purple'
         },
         '&:active': {
         backgroundColor: 'rgba(0,0,0,0)',
         color: 'purple'
-        },
-        marginBottom: '24px',
-        padding: '16px',
-        width: 200,
-        fontWeight: 'bold'
+        }
+    },
+    indigoBg: {
+        backgroundColor: 'indigo',
+        color: 'whitesmoke'
+    },
+    purpleBg: {
+        backgroundColor: 'purple',
+        color: 'whitesmoke'
     }
 }
 
@@ -30,17 +35,13 @@ function Btn(props) {
     let { classes } = props;
     let btn;
 
-   /*let clsList = classNames({
-        classes.indigoBg: props.bgColor != "undefined",
-        classes.btnRoot: true
-    });*/
+    var clsList = require('classnames');
+    clsList = clsList({[classes.btn] : true}, {[classes.btnHover] : true}, { [classes[props.bgColor + "Bg"]] : true});
 
-    btn = <Button variant="contained" className={classes.btnRoot}>Enter Gamee</Button>;
+    var btnText = props.text !== undefined ? props.text : "Some text";
 
     return(
-        <div>
-            {btn}
-        </div>
+        <Button variant="contained" className={clsList}>{btnText}</Button>
     );
 }
 
