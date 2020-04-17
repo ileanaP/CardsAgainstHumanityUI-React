@@ -1,0 +1,19 @@
+.side {
+    display: none;
+    position: absolute;
+    background: lightblue;
+    width: 500px;
+    height: 500px;
+    right: 0px;
+    margin-right: 100px;
+    top: 0px;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+@media (min-width: 1024px) {
+    .side {
+        display: block;
+    }
+}
