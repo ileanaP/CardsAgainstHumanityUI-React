@@ -11,7 +11,9 @@ import Backdrop from './components/Backdrop/Backdrop'
 import sideDrawer from './components/SideDrawer/SideDrawer';
 import Side from './components/Side/Side';
 import Main from './components/Pages/Main/Main';
-import Addd from "./components/Pages/Addd/Addd";
+import Login from "./components/Pages/Login";
+import Register from "./components/Pages/Register";
+import FourOhFour from "./components/Pages/FourOhFour";
 
 import './App.css';
 
@@ -50,7 +52,9 @@ class App extends Component {
       <div>
         <Switch>
           <Route path="/" exact component={Main} />
-          <Route path="/addd" exact component={Addd}/>
+          <Route path="/login" exact component={Login}/>
+          <Route path="/register" exact component={Register}/>
+          <Route component={FourOhFour} />
         </Switch>
       </div>
     

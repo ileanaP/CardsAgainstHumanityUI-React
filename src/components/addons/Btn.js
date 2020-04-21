@@ -1,34 +1,7 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
-
-
-const styles = {
-    btn: {
-        marginBottom: '24px',
-        padding: '16px',
-        width: 200,
-        fontWeight: 'bold'
-    },
-    btnHover: {
-        '&:hover': {
-            backgroundColor: 'rgba(0,0,0,0)',
-            color: 'purple'
-        },
-        '&:active': {
-        backgroundColor: 'rgba(0,0,0,0)',
-        color: 'purple'
-        }
-    },
-    indigoBg: {
-        backgroundColor: 'indigo',
-        color: 'whitesmoke'
-    },
-    purpleBg: {
-        backgroundColor: 'purple',
-        color: 'whitesmoke'
-    }
-}
+import { styles } from '../styles.js';
 
 function Btn(props) {
 
