@@ -48,7 +48,7 @@ class App extends Component {
           <SideDrawer show={this.state.sideDrawerOpen}
                       closeSideDrawerFunction={this.backdropClickHandler}/>
           {backdrop}
-            <div class="content">
+            <div className="content">
       <div>
         <Switch>
           <Route path="/" exact component={Main} />

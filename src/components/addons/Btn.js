@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from '../styles.js';
@@ -14,7 +15,7 @@ function Btn(props) {
     var btnText = props.text !== undefined ? props.text : "Some text";
 
     return(
-        <Button variant="contained" className={clsList}>{btnText}</Button>
+            <Button variant="contained" className={clsList} href={props.href} >{btnText}</Button>
     );
 }
 

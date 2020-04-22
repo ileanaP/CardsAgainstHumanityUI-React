@@ -53,11 +53,19 @@ export const styles = {
     },
     litterText: {
         fontSize: 12,
-        fontStyle: "italic"
+        fontStyle: "italic",
+        display: "inline-block"
     },
     centeredBox: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    strongTxt: {
+        fontWeight: 'bold'
+    },
+    noDec: {
+        textDecoration: 'none',
+        color: 'fuchsia'
     }
 }

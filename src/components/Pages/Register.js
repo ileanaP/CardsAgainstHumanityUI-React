@@ -12,7 +12,7 @@ import { styles } from '../styles.js';
 function Register(props){
 
   const { classes } = props;
-   
+
     return(
         <Box className={classes.centeredBox}>
             <Box clone pt={2} pr={1} pb={1} pl={2} width={400} height={0}>

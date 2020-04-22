@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Side from '../../Side/Side';
-import GameBox from './GameBox';
+import GameBoxes from './GameBoxes';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -8,9 +8,22 @@ import Btn from '../../addons/Btn';
 import { styles } from '../../styles.js';
 
 
-function Main(props) {
+class Main extends Component {
 
-    const { classes } = props;
+    render(){
+
+    const { classes } = this.props;
+
+    const axios = require('axios');
+
+    axios.get()
+    .then(function (response) {
+        this.setState({
+            games: response['data'],
+          });
+    }).catch(function (error) {
+      console.log(error);
+    });
 
     return(
         <div className={classes.Main}>
@@ -18,13 +31,12 @@ function Main(props) {
                 <Btn bgColor={"indigo"} text={"New Game"}/>
             </Grid>
             <div>
-                <GameBox />
-                <GameBox />
-                <GameBox />
-                <GameBox />
+                <GameBoxes />
             </div>
         </div>
     );
+    
+}
 }
 
 
