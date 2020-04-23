@@ -14,6 +14,7 @@ import Main from './components/Pages/Main/Main';
 import Login from "./components/Pages/Login";
 import Register from "./components/Pages/Register";
 import FourOhFour from "./components/Pages/FourOhFour";
+import Game from './components/Pages/Game/Game';
 
 import './App.css';
 
@@ -54,6 +55,7 @@ class App extends Component {
           <Route path="/" exact component={Main} />
           <Route path="/login" exact component={Login}/>
           <Route path="/register" exact component={Register}/>
+          <Route path="/game/:id" exact component={Game}/>
           <Route component={FourOhFour} />
         </Switch>
       </div>

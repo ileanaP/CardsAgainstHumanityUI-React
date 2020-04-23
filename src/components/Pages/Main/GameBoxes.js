@@ -41,8 +41,9 @@ class GameBoxes extends Component {
     }
 
     async componentDidMount() {
-        const {data} = await Axios.get('http://cardsagainsthumanity.test/api/games');
-        this.setState({boxes: data});
+        const data = await Axios.get('http://cardsagainsthumanity.test/api/games');
+
+        this.setState({boxes: data['data']});
     }
     
     render(){
@@ -50,7 +51,6 @@ class GameBoxes extends Component {
         return(
             <Fragment>
                 {this.state.boxes.map((box, idx) => {
-                    console.log(box);
                     return (
                         <Box clone pt={2} pr={1} pb={1} pl={2} width={300} height={0}
                                     className={classes.balanceBox}>
