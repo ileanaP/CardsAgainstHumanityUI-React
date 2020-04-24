@@ -7,15 +7,16 @@ import { styles } from '../styles.js';
 function Btn(props) {
 
     let { classes } = props;
-    let btn;
 
     var clsList = require('classnames');
     clsList = clsList({[classes.btn] : true}, {[classes.btnHover] : true}, { [classes[props.bgColor + "Bg"]] : true});
 
     var btnText = props.text !== undefined ? props.text : "Some text";
 
+    const btnAction = props.onClick !== undefined ? props.onClick : null;
+
     return(
-            <Button variant="contained" className={clsList} href={props.href} >{btnText}</Button>
+            <Button variant="contained" className={clsList} href={props.href} onClick={btnAction}>{btnText}</Button>
     );
 }
 

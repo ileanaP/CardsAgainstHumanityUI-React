@@ -41,9 +41,13 @@ class GameBoxes extends Component {
     }
 
     async componentDidMount() {
-        const data = await Axios.get('http://cardsagainsthumanity.test/api/games');
-
-        this.setState({boxes: data['data']});
+        await Axios.get('http://cardsagainsthumanity.test/api/games')
+            .then(data => { 
+                this.setState({boxes: data['data']});
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
     
     render(){

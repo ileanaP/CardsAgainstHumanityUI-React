@@ -67,5 +67,12 @@ export const styles = {
     noDec: {
         textDecoration: 'none',
         color: 'fuchsia'
+    },
+    warningPaper: {
+        backgroundColor: '#383838',
+        padding: '10px',
+        minWidth: '150px',
+        margin: '15px',
+        color: 'white'
     }
 }

@@ -27,15 +27,15 @@ class Game extends Component {
             })
             .catch(error => {
                 this.setState({redirect: '/'});
-            });;
+            });
     }
 
-    render() {
-        const { classes } = this.props;
-        
+    render() {        
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
         }
+
+        const { classes } = this.props;
 
         return (
             <Fragment>

@@ -12,6 +12,7 @@ import sideDrawer from './components/SideDrawer/SideDrawer';
 import Side from './components/Side/Side';
 import Main from './components/Pages/Main/Main';
 import Login from "./components/Pages/Login";
+import Logout from "./components/Pages/Logout";
 import Register from "./components/Pages/Register";
 import FourOhFour from "./components/Pages/FourOhFour";
 import Game from './components/Pages/Game/Game';
@@ -54,6 +55,7 @@ class App extends Component {
         <Switch>
           <Route path="/" exact component={Main} />
           <Route path="/login" exact component={Login}/>
+          <Route path="/logout" exact component={Logout}/>
           <Route path="/register" exact component={Register}/>
           <Route path="/game/:id" exact component={Game}/>
           <Route component={FourOhFour} />
