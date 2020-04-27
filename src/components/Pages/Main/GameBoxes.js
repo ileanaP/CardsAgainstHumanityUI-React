@@ -93,7 +93,7 @@ class GameBoxes extends Component {
                                 <Grid container justify="flex-start" spacing={1} className={classes.btnPadding}>
                                     <Grid item>
                                         <Box pt={2}>
-                                            <Btn bgColor={"purple"} text={"Enter Game"} href={"/game?id=" + box.id }/>
+                                            <Btn bgColor={"purple"} text={"Enter Game"} href={"/game/" + box.id }/>
                                         </Box>
                                     </Grid>
                                 </Grid>

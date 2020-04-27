@@ -74,5 +74,30 @@ export const styles = {
         minWidth: '150px',
         margin: '15px',
         color: 'white'
+    },
+    blackCard: {
+        backgroundColor: 'black',
+        color: 'white',
+        display: 'inline-block',
+        width: '150px',
+        height: '200px',
+        margin: '15px'
+    },
+    whiteCard: {
+        backgroundColor: 'white',
+        color: 'black',
+        display: 'inline-block',
+        width: '100px',
+        height: '150px',
+        margin: '15px 5px'
+    },
+    cardset: {
+        backgroundColor: 'moccasin',
+        margin: '5px 5px',
+        padding: '0px 10px',
+        '&:hover': {
+            backgroundColor: 'darkkhaki',
+            cursor: 'pointer'
+        }
     }
 }
