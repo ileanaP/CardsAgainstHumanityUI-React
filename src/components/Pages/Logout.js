@@ -1,19 +1,26 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
+import WaitRedirect from '../addons/WaitRedirect';
 
-
-function Logout() 
+class Logout extends Component 
 {
-    localStorage.removeItem('userData');
+    componentDidMount() {
+        if(this.props.isLoggedIn)
+        {
+            localStorage.removeItem('userData');
 
-    const cookies = new Cookies();
-    cookies.remove('username');
-    cookies.remove('useremail');
+            const cookies = new Cookies();
+            cookies.remove('username');
+            cookies.remove('useremail');
 
-    return(
-        <Redirect to={"/"} />
-    );
+            this.props.toggleLoginState();
+            this.setState({redirect: true});
+        }
+    }
+
+    render(){
+        return(<WaitRedirect link={"/"} ms={1000} />);
+    }
 }
 
 export default Logout;

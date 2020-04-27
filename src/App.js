@@ -20,9 +20,18 @@ import Game from './components/Pages/Game/Game';
 import './App.css';
 
 class App extends Component {
-  state = {
-    sideDrawerOpen: false
-  };
+  constructor(){
+    super();
+      let isLoggedIn = localStorage['userData'] == undefined ? false : true;
+
+    console.log("00000" + isLoggedIn + "00000");
+
+
+    this.state = {
+      sideDrawerOpen: false,
+      isLoggedIn: isLoggedIn
+    };
+  }
 
   drawerToggleClickHandler = () => {
     this.setState((prevState) => {
@@ -34,6 +43,10 @@ class App extends Component {
     this.setState({sideDrawerOpen : false});
   };
 
+  toggleLoginState = () => {    
+    let isLoggedIn = !this.state.isLoggedIn;
+    this.setState({isLoggedIn: isLoggedIn});
+  }
 
   render() {
     let backdrop;
@@ -46,23 +59,21 @@ class App extends Component {
       <Router>
         <div className="App">
           <Toolbar drawerClickHandler = {this.drawerToggleClickHandler}
-                  testtText = {this.state.testText} />
+                  testtText = {this.state.testText} isLoggedIn={this.state.isLoggedIn}/>
           <SideDrawer show={this.state.sideDrawerOpen}
-                      closeSideDrawerFunction={this.backdropClickHandler}/>
+                      closeSideDrawerFunction={this.backdropClickHandler} isLoggedIn={this.state.isLoggedIn}/>
           {backdrop}
             <div className="content">
       <div>
         <Switch>
           <Route path="/" exact component={Main} />
-          <Route path="/login" exact component={Login}/>
-          <Route path="/logout" exact component={Logout}/>
+          <Route path="/login" render={(props) => <Login toggleLoginState={this.toggleLoginState} isLoggedIn={this.state.isLoggedIn} />}/>
+          <Route path="/logout" render={(props) =>  <Logout toggleLoginState={this.toggleLoginState} isLoggedIn={this.state.isLoggedIn} />}/>
           <Route path="/register" exact component={Register}/>
           <Route path="/game/:id" exact component={Game}/>
           <Route component={FourOhFour} />
         </Switch>
       </div>
-    
-
             </div>
           </div>
           </Router>

@@ -11,6 +11,7 @@ import NotifMsg from '../addons/NotifMsg';
 import { styles } from '../styles.js';
 import Axios from 'axios';
 import Cookies from 'universal-cookie';
+import WaitRedirect from '../addons/WaitRedirect';
 
 
 class Login extends Component {
@@ -28,9 +29,8 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        if(localStorage['userData'] !== undefined) {
+        if(this.props.isLoggedIn)
             this.setState({redirect: '/'});
-        }
     }
 
     async login() {
@@ -48,6 +48,7 @@ class Login extends Component {
                 cookies.set('username', data['name'], { path: '/' });
                 cookies.set('useremail', data['email'], { path: '/' });
 
+                this.props.toggleLoginState();
                 this.setState({redirect: '/'});
             })
             .catch(error => {
@@ -61,7 +62,7 @@ class Login extends Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect to={this.state.redirect} />
+            return  <WaitRedirect link={"/"} ms={0} />
         }
 
         const { classes } = this.props;

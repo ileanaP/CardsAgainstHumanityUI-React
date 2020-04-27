@@ -5,7 +5,11 @@ function NavLinks(props) {
 
     let links = [{name: 'Home', href: '/'}];
 
-    if(localStorage['userData'] == undefined) {
+    console.log("~~~~");
+    console.log(props.isLoggedIn);
+    console.log("~~~~");
+    
+    if(!props.isLoggedIn) {
         links.push({name: 'Login', href: '/login'});
     }
     else {
