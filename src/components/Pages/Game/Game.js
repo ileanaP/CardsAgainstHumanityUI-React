@@ -32,6 +32,21 @@ class Game extends Component {
     }
 
     async componentDidMount() {
+        if(!JSON.parse(localStorage.getItem('loggedIn'))) {
+            this.setState({redirect: "/"});
+            return;
+        }
+
+        let user = JSON.parse(localStorage.getItem('userData'));
+
+        await Axios.get('http://cardsagainsthumanity.test/api/games/' + this.state.id + '/users/' + user['id'])
+            .then(data => {
+                console.log('ok');
+            })
+            .catch(error => {
+                this.setState({redirect: '/'});
+            });
+
         /* await Axios.get('http://cardsagainsthumanity.test/api/games/' + this.state.id)
             .then(data => { 
                 this.setState({box: [ data['data'] ] });

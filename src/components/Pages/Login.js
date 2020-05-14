@@ -10,7 +10,7 @@ import Btn from '../addons/Btn';
 import NotifMsg from '../addons/NotifMsg';
 import { styles } from '../styles.js';
 import Axios from 'axios';
-import Cookies from 'universal-cookie';
+//import Cookies from 'universal-cookie';
 import WaitRedirect from '../addons/WaitRedirect';
 
 
@@ -29,24 +29,34 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        if(this.props.isLoggedIn)
+        if(JSON.parse(localStorage.getItem('loggedIn')))
             this.setState({redirect: '/'});
     }
 
     async login() {
         const data = {
-            email: this.state.email,
-            password: this.state.password
+            email: this.state.email.trim(),
+            password: this.state.password.trim()
         }
 
         await Axios.post('http://cardsagainsthumanity.test/api/login', data)
             .then(data => { 
                 data = data['data'];
-                localStorage.setItem('userData', data);
 
-                const cookies = new Cookies();
+                let localData = {
+                    id: data['id'],
+                    name: data['name'],
+                    email: data['email'],
+                    token: data['token'],
+                    game: data['in_game']
+                };
+                
+                localStorage.setItem('userData', JSON.stringify(localData));
+                localStorage.setItem('loggedIn', 'true');
+
+                /* const cookies = new Cookies();
                 cookies.set('username', data['name'], { path: '/' });
-                cookies.set('useremail', data['email'], { path: '/' });
+                cookies.set('useremail', data['email'], { path: '/' }); */
 
                 this.props.toggleLoginState();
                 this.setState({redirect: '/'});

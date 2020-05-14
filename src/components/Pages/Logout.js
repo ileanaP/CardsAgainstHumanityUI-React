@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
-import Cookies from 'universal-cookie';
+//import Cookies from 'universal-cookie';
 import WaitRedirect from '../addons/WaitRedirect';
 
 class Logout extends Component 
 {
     componentDidMount() {
-        if(this.props.isLoggedIn)
+        if(JSON.parse(localStorage.getItem('loggedIn')))
         {
             localStorage.removeItem('userData');
+            localStorage.setItem('loggedIn', 'false');
 
-            const cookies = new Cookies();
+/*             const cookies = new Cookies();
             cookies.remove('username');
-            cookies.remove('useremail');
+            cookies.remove('useremail'); */
 
             this.props.toggleLoginState();
             this.setState({redirect: true});

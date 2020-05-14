@@ -13,22 +13,6 @@ import { withStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { styles } from '../../styles.js';
 
-const CssTextField = withStyles({
-    root: {
-      '& label.Mui-focused': {
-        color: 'indigo',
-      },
-      '& .MuiInput-underline:after': {
-        borderBottomColor: 'pink',
-      },
-      '& .MuiOutlinedInput-root': {
-        '&.Mui-focused fieldset': {
-          borderColor: 'indigo',
-        },
-      },
-    },
-  })(TextField);
-
 class GameBoxes extends Component {
 
     constructor(){
@@ -52,9 +36,23 @@ class GameBoxes extends Component {
     
     render(){
         const { classes } = this.props;
+
+        let enterGameBg;
+
+        if(this.props.disabled)
+        {
+            enterGameBg = "disabled";
+            
+        }
+        else
+        {
+            enterGameBg = "indigo";
+        }
+        
         return(
             <Fragment>
                 {this.state.boxes.map((box, idx) => {
+                    let btnHref = JSON.parse(localStorage.getItem('loggedIn')) ? "/game/" + box.id : "";
                     return (
                         <Box clone pt={2} pr={1} pb={1} pl={2} width={300} height={0}
                                     className={classes.balanceBox}>
@@ -81,19 +79,18 @@ class GameBoxes extends Component {
                                 </Grid>
                                 <Grid container spacing={2} alignItems="center" wrap="nowrap" className={classes.textfieldPadding}>
                                     <Grid item className={classes.paddingTop}>
-                                        <CssTextField id="outlined-basic"
-                                            className={classes.margin}
+                                        <TextField className={classes.rootSmtg}
                                             label="Password"
                                             variant="outlined"
                                             type="password"
-                                            id="custom-css-outlined-input"
+                                            disabled={this.props.disabled}
                                         />
                                     </Grid>
                                 </Grid>
                                 <Grid container justify="flex-start" spacing={1} className={classes.btnPadding}>
                                     <Grid item>
                                         <Box pt={2}>
-                                            <Btn bgColor={"purple"} text={"Enter Game"} href={"/game/" + box.id }/>
+                                            <Btn bgColor={enterGameBg} text={"Enter Game"} href={btnHref}/>
                                         </Box>
                                     </Grid>
                                 </Grid>

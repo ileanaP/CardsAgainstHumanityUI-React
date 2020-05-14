@@ -10,7 +10,7 @@ import NotifMsg from '../addons/NotifMsg';
 import { Redirect } from 'react-router-dom';
 import { styles } from '../styles.js';
 import Axios from 'axios';
-import Cookies from 'universal-cookie';
+//import Cookies from 'universal-cookie';
 import { render } from '@testing-library/react';
 
 
@@ -42,9 +42,9 @@ class Register extends Component {
                 data = data['data'];
                 localStorage.setItem('userData', data);
 
-                const cookies = new Cookies();
+                /* const cookies = new Cookies();
                 cookies.set('username', data['name'], { path: '/' });
-                cookies.set('useremail', data['email'], { path: '/' });
+                cookies.set('useremail', data['email'], { path: '/' }); */
 
                 this.setState({redirect: '/'});
             })

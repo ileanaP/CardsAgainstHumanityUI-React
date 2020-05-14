@@ -21,8 +21,9 @@ export const styles = {
     },
     btn: {
         marginBottom: '24px',
+        marginRight: '12px',
         padding: '16px',
-        width: 200,
+        minWidth: 200,
         fontWeight: 'bold'
     },
     btnHover: {
@@ -35,12 +36,29 @@ export const styles = {
         color: 'purple'
         }
     },
+    disabledBg: {
+        backgroundColor: 'gray',
+        color: 'gainsboro',
+        cursor: 'no-drop',
+        '&:hover': {
+            backgroundColor: 'gray',
+            color: 'gainsboro',
+        },
+        '&:active': {
+            backgroundColor: 'gray',
+            color: 'gainsboro',
+        }
+    },
     indigoBg: {
         backgroundColor: 'indigo',
         color: 'whitesmoke'
     },
     purpleBg: {
         backgroundColor: 'purple',
+        color: 'whitesmoke'
+    },
+    pinkBg: {
+        backgroundColor: 'deeppink',
         color: 'whitesmoke'
     },
     formItem: {
@@ -99,5 +117,18 @@ export const styles = {
             backgroundColor: 'darkkhaki',
             cursor: 'pointer'
         }
-    }
+    },
+    rootSmtg: {
+        '& label.Mui-focused': {
+            color: 'indigo',
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: 'pink',
+        },
+        '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': {
+                borderColor: 'indigo',
+            },
+        },
+    },
 }

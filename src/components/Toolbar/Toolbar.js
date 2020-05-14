@@ -13,7 +13,7 @@ const toolbar = props => (
             <div className="toolbar-logo"><a href="/">Meh Logo</a></div>
             <div className="spacer"></div>
             <div className="toolbar-nav-items">
-                <NavLinks click={undefined} isLoggedIn={props.isLoggedIn}/>
+                <NavLinks click={undefined}/>
             </div>
         </nav>
     </header>

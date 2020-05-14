@@ -4,16 +4,15 @@ import { Link } from "react-router-dom";
 function NavLinks(props) {
 
     let links = [{name: 'Home', href: '/'}];
-
-    console.log("~~~~");
-    console.log(props.isLoggedIn);
-    console.log("~~~~");
     
-    if(!props.isLoggedIn) {
+    if(!JSON.parse(localStorage.getItem('loggedIn'))) {
         links.push({name: 'Login', href: '/login'});
+
+        console.log("?????", !JSON.parse(localStorage.getItem('loggedIn')));
     }
     else {
         links.push({name: 'Logout', href: '/logout'});
+        console.log("!!!!!", !JSON.parse(localStorage.getItem('loggedIn')));
     }
 
     return(

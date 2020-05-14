@@ -11,7 +11,7 @@ const sideDrawer = props => {
 
     return (
         <nav className={drawerClasses.join(' ')}>
-            <NavLinks click={props.closeSideDrawerFunction} isLoggedIn={props.isLoggedIn}/>
+            <NavLinks click={props.closeSideDrawerFunction}/>
         </nav>
     );
 };

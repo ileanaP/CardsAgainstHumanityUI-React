@@ -22,14 +22,10 @@ import './App.css';
 class App extends Component {
   constructor(){
     super();
-      let isLoggedIn = localStorage['userData'] == undefined ? false : true;
-
-    console.log("00000" + isLoggedIn + "00000");
-
 
     this.state = {
       sideDrawerOpen: false,
-      isLoggedIn: isLoggedIn
+      isLoggedIn: JSON.parse(localStorage.getItem('loggedIn'))
     };
   }
 
@@ -44,10 +40,9 @@ class App extends Component {
   };
 
   toggleLoginState = () => {    
-    let isLoggedIn = !this.state.isLoggedIn;
-    this.setState({isLoggedIn: isLoggedIn});
+    this.setState({isLoggedIn: JSON.parse(localStorage.getItem('loggedIn'))});
+    console.log("toggleLoginState toggled");
   }
-
   render() {
     let backdrop;
 
@@ -55,25 +50,28 @@ class App extends Component {
       backdrop = <Backdrop click = {this.backdropClickHandler} />;
     }
 
+    let testText = this.state.testText;
+    let sideDrawerOpen = this.state.sideDrawerOpen;
+
     return (
       <Router>
         <div className="App">
           <Toolbar drawerClickHandler = {this.drawerToggleClickHandler}
-                  testtText = {this.state.testText} isLoggedIn={this.state.isLoggedIn}/>
-          <SideDrawer show={this.state.sideDrawerOpen}
-                      closeSideDrawerFunction={this.backdropClickHandler} isLoggedIn={this.state.isLoggedIn}/>
+                  testtText = {testText}/>
+          <SideDrawer show={sideDrawerOpen}
+                      closeSideDrawerFunction={this.backdropClickHandler}/>
           {backdrop}
             <div className="content">
-      <div>
-        <Switch>
-          <Route path="/" exact component={Main} />
-          <Route path="/login" render={(props) => <Login toggleLoginState={this.toggleLoginState} isLoggedIn={this.state.isLoggedIn} />}/>
-          <Route path="/logout" render={(props) =>  <Logout toggleLoginState={this.toggleLoginState} isLoggedIn={this.state.isLoggedIn} />}/>
-          <Route path="/register" exact component={Register}/>
-          <Route path="/game/:id" exact component={Game}/>
-          <Route component={FourOhFour} />
-        </Switch>
-      </div>
+              <div>
+                <Switch>
+                  <Route path="/login" render={() => <Login toggleLoginState={this.toggleLoginState} />}/>
+                  <Route path="/logout" render={() => <Logout toggleLoginState={this.toggleLoginState} />}/>
+                  <Route path="/register" exact component={Register}/>
+                  <Route path="/game/:id"  render={(props) => <Game {...props} /> }/>
+                  <Route exact path="/" render={() => <Main />}/>
+                  <Route component={FourOhFour} />
+                </Switch>
+              </div>
             </div>
           </div>
           </Router>
