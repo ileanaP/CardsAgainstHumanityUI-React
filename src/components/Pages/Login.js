@@ -21,7 +21,11 @@ class Login extends Component {
 
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            warning: {
+                class: false,
+                text: ""
+            }
         }
 
         this.login = this.login.bind(this);
@@ -62,7 +66,17 @@ class Login extends Component {
                 this.setState({redirect: '/'});
             })
             .catch(error => {
-                this.setState({warningClass: true});
+                let warningText;
+                if(error.response.status == 401)
+                {
+                    warningText = "Username or password are incorrect.";
+                }
+                else
+                {
+                    warningText = "Unknown error. Contact server admin.";
+                }
+                this.setState({warning: {class: true, text: warningText}});
+
             });
     }
 
@@ -77,13 +91,14 @@ class Login extends Component {
 
         const { classes } = this.props;
 
-        let warningClass = this.state.warningClass ? true : false;
+        let warningClass =  this.state.warning.class;
+        let warningText = this.state.warning.text;
    
         return(
             <Box className={classes.centeredBox}>
                 <Box clone pt={2} pr={1} pb={1} pl={2} width={400} height={0} >
                     <Paper elevation={3}>
-                        <NotifMsg type={'warning'} text={"Username or password are incorrect."} visibility={warningClass}/>
+                        <NotifMsg type={'warning'} text={warningText} visibility={warningClass}/>
                         <form noValidate autoComplete="off">
                         <Grid container spacing={2} alignItems="center" wrap="nowrap" direction={'column'}>
                             <Grid item>

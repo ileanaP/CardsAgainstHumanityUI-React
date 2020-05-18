@@ -6,9 +6,27 @@ import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Btn from '../../addons/Btn';
 import { styles } from '../../styles.js';
+import Axios from 'axios';
 
 
 class Main extends Component {
+
+    async leaveGame(user, game) {
+
+        let tmpUser = JSON.parse(localStorage.getItem('userData'));
+        let tmpGame = user != undefined ? user['game'] : null;
+
+        if(tmpUser != user || tmpGame != game)
+            return;
+
+        await Axios.get('http://cardsagainsthumanity.test/api/games/' + this.state.id + '/users/' + user['id'])
+        .then(data => {
+            console.log('ok');
+        })
+        .catch(error => {
+            this.setState({redirect: '/'});
+        });
+    }
 
     render(){
         
@@ -32,8 +50,10 @@ class Main extends Component {
                 break;
             case game != null && loggedIn:
                 action = <Fragment>
-                            <Btn bgColor={"pink"} text={"Already In Game; Enter"}/>
-                            <Btn bgColor={"gray"} text={"Leave Game"}/>
+                            <Btn bgColor={"pink"} text={"Already In Game; Enter"}
+                                 href={"/game/" + game}/>
+                            <Btn bgColor={"gray"} text={"Leave Game"}
+                                 onClick={this.leaveGame}/>
                          </Fragment>
                 disabled = true;
                 break;

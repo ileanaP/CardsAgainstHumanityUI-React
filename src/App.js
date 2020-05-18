@@ -16,12 +16,16 @@ import Logout from "./components/Pages/Logout";
 import Register from "./components/Pages/Register";
 import FourOhFour from "./components/Pages/FourOhFour";
 import Game from './components/Pages/Game/Game';
+import ApiURLContext from './app-context';
 
 import './App.css';
 
 class App extends Component {
   constructor(){
     super();
+
+    console.log(JSON.parse(localStorage.getItem('loggedIn')));
+    console.log("~~~");
 
     this.state = {
       sideDrawerOpen: false,
@@ -40,9 +44,10 @@ class App extends Component {
   };
 
   toggleLoginState = () => {    
-    this.setState({isLoggedIn: JSON.parse(localStorage.getItem('loggedIn'))});
-    console.log("toggleLoginState toggled");
+    let isLoggedIn = JSON.parse(localStorage.getItem('loggedIn'));
+    this.setState({isLoggedIn: isLoggedIn});
   }
+
   render() {
     let backdrop;
 
@@ -57,6 +62,7 @@ class App extends Component {
       <Router>
         <div className="App">
           <Toolbar drawerClickHandler = {this.drawerToggleClickHandler}
+                  
                   testtText = {testText}/>
           <SideDrawer show={sideDrawerOpen}
                       closeSideDrawerFunction={this.backdropClickHandler}/>
