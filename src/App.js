@@ -16,21 +16,54 @@ import Logout from "./components/Pages/Logout";
 import Register from "./components/Pages/Register";
 import FourOhFour from "./components/Pages/FourOhFour";
 import Game from './components/Pages/Game/Game';
-import ApiURLContext from './app-context';
+import WaitRedirect from './components/addons/WaitRedirect';
+import Axios from 'axios';
 
 import './App.css';
+import './globals.js';
 
 class App extends Component {
   constructor(){
     super();
-
-    console.log(JSON.parse(localStorage.getItem('loggedIn')));
-    console.log("~~~");
-
+    
     this.state = {
       sideDrawerOpen: false,
-      isLoggedIn: JSON.parse(localStorage.getItem('loggedIn'))
+      isLoggedIn: JSON.parse(localStorage.getItem('loggedIn')),
+      redirect: ''
     };
+  }
+
+  leaveGame = async () => {
+
+    console.log('it got fortunately here');
+
+       let user = JSON.parse(localStorage.getItem('userData'));
+
+    console.log('it got here fortunately too');
+
+    console.log(user);
+
+      if(user == null || user['game'] == null)
+          return;
+
+      
+
+      const callLink = 'games/' + user['game'] + '/users/' + user['id'] + '/remove';
+
+      await Axios.post(global.api + callLink)
+      .then(data => {
+
+        console.log('it got here fortunately too too too or da da da :o');
+
+          user['game'] = null;
+          localStorage.setItem('userData', JSON.stringify(user));
+
+          this.setState({redirect: '/'});
+      })
+      .catch(error => {
+          console.log(error);
+          console.log('it got here fortunately too too too or nu nu nu :o');
+      }); 
   }
 
   drawerToggleClickHandler = () => {
@@ -49,6 +82,10 @@ class App extends Component {
   }
 
   render() {
+    let redirect = null;
+    if(this.state.redirect != '')
+      redirect = <WaitRedirect link={'/'} ms={0} />
+
     let backdrop;
 
     if(this.state.sideDrawerOpen){
@@ -60,6 +97,7 @@ class App extends Component {
 
     return (
       <Router>
+        {redirect}
         <div className="App">
           <Toolbar drawerClickHandler = {this.drawerToggleClickHandler}
                   
@@ -73,8 +111,8 @@ class App extends Component {
                   <Route path="/login" render={() => <Login toggleLoginState={this.toggleLoginState} />}/>
                   <Route path="/logout" render={() => <Logout toggleLoginState={this.toggleLoginState} />}/>
                   <Route path="/register" exact component={Register}/>
-                  <Route path="/game/:id"  render={(props) => <Game {...props} /> }/>
-                  <Route exact path="/" render={() => <Main />}/>
+                  <Route path="/game/:id"  render={(props) => <Game {...props} leaveGame={this.leaveGame}/> }/>
+                  <Route exact path="/" render={() => <Main leaveGame={this.leaveGame}/>}/>
                   <Route component={FourOhFour} />
                 </Switch>
               </div>

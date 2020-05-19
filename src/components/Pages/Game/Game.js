@@ -25,6 +25,8 @@ class Game extends Component {
         let id = this.props.match.params.id;
         let idNr = !isNaN(id) ? Number(id) : 0;
         
+        //
+
         this.state = {
             id: idNr,
             box: []
@@ -32,28 +34,46 @@ class Game extends Component {
     }
 
     async componentDidMount() {
-        if(!JSON.parse(localStorage.getItem('loggedIn'))) {
+
+        await Axios.get(global.api + 'games/' + this.state.id)
+            .then(data => { 
+                this.setState({box: [ data['data'] ] });
+            })
+            .catch(error => {
+                this.setState({redirect: '/'});
+            });
+
+        if(!JSON.parse(localStorage.getItem('loggedIn')))
+        {
             this.setState({redirect: "/"});
             return;
         }
 
         let user = JSON.parse(localStorage.getItem('userData'));
 
-        await Axios.get('http://cardsagainsthumanity.test/api/games/' + this.state.id + '/users/' + user['id'])
+        await Axios.get(global.api + 'games/' + this.state.id + '/users/' + user['id'])
             .then(data => {
-                console.log('ok');
-            })
-            .catch(error => {
-                this.setState({redirect: '/'});
-            });
+                console.log('~~~ * ~~~');
+                console.log(data['data']['in_game']);
+                console.log('~~~ * ~~~');
+                console.log(user['game']);
+                console.log('~~~ * ~~~');
+                console.log(this.state.id);
+                console.log('~~~ * ~~~');
 
-        /* await Axios.get('http://cardsagainsthumanity.test/api/games/' + this.state.id)
-            .then(data => { 
-                this.setState({box: [ data['data'] ] });
+                if(user['game'] != this.state.id)
+                {
+                    user['game'] = this.state.id;
+                    localStorage.setItem('userData', JSON.stringify(user));
+
+                    console.log('o treaba spinoasa ****');
+                    console.log(JSON.parse(localStorage.getItem('userData')));
+                }
             })
             .catch(error => {
-                this.setState({redirect: '/'});
-            }); */
+                console.log(error);
+                //this.setState({redirect: '/'});
+            });
     }
     
     render() {        
@@ -67,7 +87,15 @@ class Game extends Component {
             <Fragment>
                 <Grid container spacing={2} >
                     <Grid item xs={2}>
-                        <Card text={"ala balla"} type="black" />
+                        <Grid container>
+                            <Grid item>
+                                <Card text={"ala balla"} type="black" />
+                            </Grid>
+                            <Grid item>
+                                <Btn bgColor={"gray"} text={"Leave Game"}
+                                     onClick={this.props.leaveGame} />
+                            </Grid>
+                        </Grid>
                     </Grid>
                     <Grid item xs={10}>
                         <Grid container >

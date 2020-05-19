@@ -37,7 +37,7 @@ class Register extends Component {
             password: this.state.password
         }
 
-        await Axios.post('http://cardsagainsthumanity.test/api/register', data)
+        await Axios.post(global.api + 'register', data)
             .then(data => { 
                 data = data['data'];
                 localStorage.setItem('userData', data);

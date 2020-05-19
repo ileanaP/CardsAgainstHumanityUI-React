@@ -1,0 +1,1 @@
+global.api = 'http://cardsagainsthumanity.test/api/';

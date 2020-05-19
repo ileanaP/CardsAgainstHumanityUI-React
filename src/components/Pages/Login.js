@@ -43,7 +43,7 @@ class Login extends Component {
             password: this.state.password.trim()
         }
 
-        await Axios.post('http://cardsagainsthumanity.test/api/login', data)
+        await Axios.post(global.api + 'login', data)
             .then(data => { 
                 data = data['data'];
 

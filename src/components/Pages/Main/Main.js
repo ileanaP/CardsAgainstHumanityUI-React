@@ -6,43 +6,33 @@ import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Btn from '../../addons/Btn';
 import { styles } from '../../styles.js';
-import Axios from 'axios';
 
 
 class Main extends Component {
 
-    async leaveGame(user, game) {
+    constructor(props){
+        super(props);
 
-        let tmpUser = JSON.parse(localStorage.getItem('userData'));
-        let tmpGame = user != undefined ? user['game'] : null;
-
-        if(tmpUser != user || tmpGame != game)
-            return;
-
-        await Axios.get('http://cardsagainsthumanity.test/api/games/' + this.state.id + '/users/' + user['id'])
-        .then(data => {
-            console.log('ok');
-        })
-        .catch(error => {
-            this.setState({redirect: '/'});
-        });
-    }
-
-    render(){
-        
-        let action;
+        console.log(localStorage.getItem('loggedIn'));
+        console.log(localStorage.getItem('userData'));
 
         let user = JSON.parse(localStorage.getItem('userData'));
 
-        let game = user != undefined ? user['game'] : null;
+        let loggedIn = user != null ? true : false;
+        let game = loggedIn ? user['game'] : null;
 
-        let loggedIn = JSON.parse(localStorage.getItem('loggedIn'));
+        this.state = {
+            game: game,
+            loggedIn: loggedIn
+        }
+    }
 
+    render(){
+        let action;
+
+        let game = this.state.game;
+        let loggedIn = this.state.loggedIn;
         let disabled = !loggedIn;
-        
-
-        console.log('game', game);
-        console.log('loggedIn', JSON.parse(localStorage.getItem('loggedIn')));
 
         switch(true) {
             case game == null && loggedIn:
@@ -53,7 +43,7 @@ class Main extends Component {
                             <Btn bgColor={"pink"} text={"Already In Game; Enter"}
                                  href={"/game/" + game}/>
                             <Btn bgColor={"gray"} text={"Leave Game"}
-                                 onClick={this.leaveGame}/>
+                                 onClick={this.props.leaveGame}/>
                          </Fragment>
                 disabled = true;
                 break;

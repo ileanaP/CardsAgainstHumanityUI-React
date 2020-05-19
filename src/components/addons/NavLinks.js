@@ -7,12 +7,9 @@ function NavLinks(props) {
     
     if(!JSON.parse(localStorage.getItem('loggedIn'))) {
         links.push({name: 'Login', href: '/login'});
-
-        console.log("?????", !JSON.parse(localStorage.getItem('loggedIn')));
     }
     else {
         links.push({name: 'Logout', href: '/logout'});
-        console.log("!!!!!", !JSON.parse(localStorage.getItem('loggedIn')));
     }
 
     return(
