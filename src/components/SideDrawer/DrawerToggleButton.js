@@ -1,13 +1,19 @@
 import React from 'react';
 
-import './DrawerToggleButton.css';
+import { withStyles } from '@material-ui/core/styles';
+import { styles } from '../styles.js';
 
-const drawerToggleButton = props => (
-    <button className="toggle-button" onClick={props.click}>
-        <div className="toggle-button-line"></div>
-        <div className="toggle-button-line"></div>
-        <div className="toggle-button-line"></div>
-    </button>
-);
+function drawerToggleButton(props)
+{
+    const { classes } = props;
 
-export default drawerToggleButton;
+    return (
+        <button className={classes.toggleButton} onClick={props.click}>
+            <div className={classes.toggleButtonLine}></div>
+            <div className={classes.toggleButtonLine}></div>
+            <div className={classes.toggleButtonLine}></div>
+        </button>
+    );
+}
+
+export default withStyles(styles)(drawerToggleButton);

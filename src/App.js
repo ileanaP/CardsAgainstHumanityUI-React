@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -96,29 +96,31 @@ class App extends Component {
     let sideDrawerOpen = this.state.sideDrawerOpen;
 
     return (
-      <Router>
-        {redirect}
-        <div className="App">
-          <Toolbar drawerClickHandler = {this.drawerToggleClickHandler}
-                  
-                  testtText = {testText}/>
-          <SideDrawer show={sideDrawerOpen}
-                      closeSideDrawerFunction={this.backdropClickHandler}/>
-          {backdrop}
-            <div className="content">
-              <div>
-                <Switch>
-                  <Route path="/login" render={() => <Login toggleLoginState={this.toggleLoginState} />}/>
-                  <Route path="/logout" render={() => <Logout toggleLoginState={this.toggleLoginState} />}/>
-                  <Route path="/register" exact component={Register}/>
-                  <Route path="/game/:id"  render={(props) => <Game {...props} leaveGame={this.leaveGame}/> }/>
-                  <Route exact path="/" render={() => <Main leaveGame={this.leaveGame}/>}/>
-                  <Route component={FourOhFour} />
-                </Switch>
+      <Fragment>
+        <Router>
+          {redirect}
+          <div className="App">
+            <Toolbar drawerClickHandler = {this.drawerToggleClickHandler}
+                    
+                    testtText = {testText}/>
+            <SideDrawer show={sideDrawerOpen}
+                        closeSideDrawerFunction={this.backdropClickHandler}/>
+            {backdrop}
+              <div className="content">
+                <div>
+                  <Switch>
+                    <Route path="/login" render={() => <Login toggleLoginState={this.toggleLoginState} />}/>
+                    <Route path="/logout" render={() => <Logout toggleLoginState={this.toggleLoginState} />}/>
+                    <Route path="/register" exact component={Register}/>
+                    <Route path="/game/:id"  render={(props) => <Game {...props} leaveGame={this.leaveGame}/> }/>
+                    <Route exact path="/" render={() => <Main leaveGame={this.leaveGame}/>}/>
+                    <Route component={FourOhFour} />
+                  </Switch>
+                </div>
               </div>
             </div>
-          </div>
-          </Router>
+            </Router>
+      </Fragment>
     );
   }
 }

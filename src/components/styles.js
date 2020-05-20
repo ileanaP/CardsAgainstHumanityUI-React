@@ -131,4 +131,57 @@ export const styles = {
             },
         },
     },
+    toggleButton: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-around",
+        height: "24px",
+        width: "30px",
+        background: "transparent",
+        border: "none",
+        cursor: "pointer",
+        padding: "0",
+        boxSizing: "border-box",
+        '&:focus': {
+            outline: "none"
+        }
+    },
+    toggleButtonLine: {
+        width: "30px",
+        height: "3px",
+        backgroundColor: "#00ffff"
+    },
+    drawer: {
+        backgroundColor: "wheat",
+        boxShadow: "1px 0px 7px rgba(0,0,0,0.5)",
+        position: "fixed",
+        zIndex:"101",
+        transition: "transform 0.3s ease-out",
+    },
+    drawerX: {
+        top:"0",
+        height:"100%",
+        width:"70%",
+        maxWidth: "345px",
+    },
+    drawerRight: {
+        right:"0",
+        transform: "translateX(+100%)",
+    },
+    drawerY: {
+        left:"0",
+        height:"20%",
+        width:"100%",
+        maxHeight: "200px",
+    },
+    drawerBottom: {
+        bottom: "0",
+        transform: "translateX(+100%)",
+    },
+    drawerOpenX: {
+        transform: "translateX(0)",
+    },
+    drawerOpenY: {
+        transform: "translateY(0)",
+    }
 }

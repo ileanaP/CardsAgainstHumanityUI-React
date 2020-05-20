@@ -15,7 +15,6 @@ function CardSet(props) {
     return (
         <Box className={classes.cardset}>
             {(props.cards).map( (card) => {
-                console.log(card);
                 return (
                     <Card type={card.type} text={card.text} />
                 );

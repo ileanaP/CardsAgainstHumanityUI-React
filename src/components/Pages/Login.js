@@ -67,7 +67,8 @@ class Login extends Component {
             })
             .catch(error => {
                 let warningText;
-                if(error.response.status == 401)
+                
+                if(error.response !== undefined && error.response.status == 401)
                 {
                     warningText = "Username or password are incorrect.";
                 }
