@@ -9,6 +9,7 @@ import Avatar from '@material-ui/core/Avatar';
 import VideogameAsset from '@material-ui/icons/VideogameAsset';
 import Typography from '@material-ui/core/Typography';
 import Btn from '../../addons/Btn';
+import CardsInfo from './CardsInfo';
 import PlayerInfo from './PlayerInfo';
 import Card from './Card';
 import CardSet from './CardSet';
@@ -31,13 +32,19 @@ class Game extends Component {
             box: [],
             display: 'none',
             playerInfoOpen: false,
-            sideDrawerOpen: false
+            cardsInfoOpen: false
         }
     }
 
-    openPlayerInfo = () => {
-        this.setState({playerInfoOpen : true});
-      };
+    togglePlayerInfo = () => {
+        let playerInfoOpen = !this.state.playerInfoOpen;
+        this.setState({playerInfoOpen : playerInfoOpen});
+    }
+
+    toggleCardsInfo = () => {
+        let cardsInfoOpen = !this.state.cardsInfoOpen;
+        this.setState({cardsInfoOpen : cardsInfoOpen});
+    }
 
     async componentDidMount() {
 
@@ -84,11 +91,10 @@ class Game extends Component {
 
         const { classes } = this.props;
 
-        let openn = this.state.playerInfoOpen ? true : false;
-
         return (
             <div className={"muieee"}>
-                <PlayerInfo open={this.state.playerInfoOpen}/>
+                <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
+                <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo}/>
                 <Grid container>
                     <Grid item xs={3}>
                         <Grid container>
@@ -121,12 +127,29 @@ class Game extends Component {
                             <Grid item>
                                 <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
+                            <Grid item>
+                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                            </Grid>
+                            <Grid item>
+                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                            </Grid>
+                            <Grid item>
+                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                            </Grid>
+                            <Grid item>
+                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                            </Grid>
                         </Grid>
                         
                     </Grid>
-                    <Grid item xs={1}>
-                        <Burger bgColor={"purple"} click={this.openPlayerInfo}/>
-                    </Grid>
+                    <div className={classes.sideHustle}>
+                        <div className={classes.sideHustleTop}>
+                            <Burger bgColor={"purple"} click={this.togglePlayerInfo} />
+                        </div>
+                        <div className={classes.sideHustleBottom}>
+                            <Burger bgColor={"purple"} click={this.toggleCardsInfo} />
+                        </div>
+                    </div>
                 </Grid>
             </div>
         );

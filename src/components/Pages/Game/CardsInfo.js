@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from '../../styles.js';
 import PropTypes from 'prop-types'
 
-class playerInfo extends React.Component {
+
+class CardsInfo extends React.Component {
 
     constructor(props) {
         super(props);
@@ -41,14 +42,16 @@ class playerInfo extends React.Component {
             this.props.close();
         }
     }
+
+
     
     render() {
         const { classes } = this.props;
 
-        let drawerClasses = [classes.drawer, classes.drawerRight, classes.drawerX];
+        let drawerClasses = [classes.drawer, classes.drawerBottom, classes.drawerY];
 
         if (this.state.open) {
-            drawerClasses.push(classes.drawerOpenX);
+            drawerClasses.push(classes.drawerOpenY);
         }
 
         return (
@@ -60,8 +63,8 @@ class playerInfo extends React.Component {
     }
 }
 
-playerInfo.propTypes = {
+CardsInfo.propTypes = {
     children: PropTypes.element.isRequired,
 };
 
-export default withStyles(styles)(playerInfo);
+export default withStyles(styles)(CardsInfo);

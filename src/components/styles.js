@@ -144,7 +144,8 @@ export const styles = {
         boxSizing: "border-box",
         '&:focus': {
             outline: "none"
-        }
+        },
+        margin: "0 auto"
     },
     toggleButtonLine: {
         width: "30px",
@@ -170,9 +171,9 @@ export const styles = {
     },
     drawerY: {
         left:"0",
-        height:"20%",
+        height:"30%",
         width:"100%",
-        maxHeight: "200px",
+        maxHeight: "250px",
     },
     drawerBottom: {
         bottom: "0",
@@ -183,5 +184,23 @@ export const styles = {
     },
     drawerOpenY: {
         transform: "translateY(0)",
+    },
+    sideHustle: {
+        position: "fixed",
+        top: "56px",
+        bottom: "0",
+        right: "0",
+        height: "100%",
+        width: "200px",
+        verticalAlign: "bottom"
+    },
+    sideHustleTop: {
+        marginTop:"106px"
+    },
+    sideHustleBottom: {
+        bottom: "0",
+        position: "fixed",
+        marginBottom:"106px",
+        right:"85px",
     }
 }
