@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import CloseIcon from '@material-ui/icons/Close';
+import CardSet from './CardSet';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from '../../styles.js';
 import PropTypes from 'prop-types'
@@ -57,7 +58,12 @@ class CardsInfo extends React.Component {
         return (
             <nav className={drawerClasses.join(' ')} ref={this.setWrapperRef}>
                 <CloseIcon onClick={this.props.close}/>
-                <Typography>I want to break free</Typography>
+                <Grid item>
+                    <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'},
+                                        {text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'},
+                                            {text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'},
+                                            {text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}] } />
+                </Grid>
             </nav>
         );
     }

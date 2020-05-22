@@ -171,9 +171,8 @@ export const styles = {
     },
     drawerY: {
         left:"0",
-        height:"30%",
-        width:"100%",
-        maxHeight: "250px",
+        minHeight:"280px",
+        width:"100%"
     },
     drawerBottom: {
         bottom: "0",

@@ -1,5 +1,4 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from '../../styles.js';
@@ -54,7 +53,6 @@ class playerInfo extends React.Component {
         return (
             <nav className={drawerClasses.join(' ')} ref={this.setWrapperRef}>
                 <CloseIcon onClick={this.props.close}/>
-                <Typography>I want to break free</Typography>
             </nav>
         );
     }
