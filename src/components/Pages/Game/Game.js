@@ -26,14 +26,25 @@ class Game extends Component {
 
         let id = this.props.match.params.id;
         let idNr = !isNaN(id) ? Number(id) : 0;
+        let user = JSON.parse(localStorage.getItem('userData'));
 
         this.state = {
             id: idNr,
             box: [],
             display: 'none',
             playerInfoOpen: false,
-            cardsInfoOpen: false
+            cardsInfoOpen: false,
+            cards: [],
+            user: user,
+            userHand: []
         }
+
+        this.box = null;
+        this.round = null;
+        this.cards = null;
+        this.userCards = null;
+        this.cicle = 0;
+        this.allowedToPlay = true;
     }
 
     togglePlayerInfo = () => {
@@ -48,26 +59,62 @@ class Game extends Component {
 
     async componentDidMount() {
 
-        await Axios.get(global.api + 'games/' + this.state.id)
-            .then(data => { 
-                this.setState({box: [ data['data'] ] });
-            })
-            .catch(error => {
-                this.setState({redirect: '/'});
-            });
+        const canUserAccessGame = this.canUserAccessGame();
+        const fetchGameData = this.fetchGameData();
+        const fetchRoundData = this.fetchRoundData();
 
+        Promise.all([ canUserAccessGame, fetchGameData, fetchRoundData]).then((responses) => {
+            if(!this.allowedToPlay || this.box == null || this.round == null )
+                this.setState({redirect: '/' });
+            else
+            {
+                const fetchCardData = this.fetchCardData(this.round['card_data']);
+                const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
+
+                Promise.all([ fetchCardData, fetchPlayerCards]).then((responses) => {
+                    console.log('got to here <3 <3');
+                    if(this.cards == null || this.userCards == null)
+                        this.setState({redirect: '/' });
+                    else
+                    {
+                        let userHand = this.userCards.slice(0,10);
+                        this.userCards = this.userCards.slice(10, this.userCards.length);
+                        
+
+                        this.setState({
+                            userHand: userHand,
+                            cards: this.cards
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    async fetchRoundData()
+    {
+        await Axios.get(global.api + 'games/' + this.state.id + '/rounds')
+        .then(data => {
+            data = data['data'];
+            this.round = data[data.length-1];            
+        })
+        .catch(error => {
+
+        });
+    }
+
+    async canUserAccessGame()
+    {
         if(!JSON.parse(localStorage.getItem('loggedIn')))
         {
-            this.setState({redirect: "/"});
-            return;
+            this.allowedToPlay = false;
         }
 
-        let user = JSON.parse(localStorage.getItem('userData'));
-
-        await Axios.get(global.api + 'games/' + this.state.id + '/users/' + user['id'])
+        await Axios.get(global.api + 'games/' + this.state.id + '/users/' + this.state.user['id'])
             .then(data => {
-                if(user['game'] != this.state.id)
+                if(this.state.user['game'] != this.state.id)
                 {
+                    let user = this.state.user
                     user['game'] = this.state.id;
                     localStorage.setItem('userData', JSON.stringify(user));
                 }
@@ -75,7 +122,7 @@ class Game extends Component {
             .catch(error => {
                 if(error.response !== undefined && error.response.status == 403) 
                 {
-                    this.setState({redirect: '/'});    
+                    this.allowedToPlay = false;
                 }
                 else 
                 {
@@ -83,8 +130,39 @@ class Game extends Component {
                 }
             });
     }
+
+    async fetchGameData() {
+        await Axios.get(global.api + 'games/' + this.state.id)
+            .then(data => {
+                this.box = data['data'];
+                //this.setState({box: [ data['data'] ] });
+            })
+            .catch(error => {
+                this.setState({redirect: '/'});
+            });
+    }
+
+    async fetchCardData(cards){
+        await Axios.get(global.api + 'cards/' + cards)
+            .then(data => {
+                this.cards = data['data'];
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    async fetchPlayerCards(round){
+        await Axios.get(global.api + 'users/' + this.state.user['id'] + '/rounds/' + round)
+            .then(data => {
+                this.userCards = data['data'];
+            })
+            .catch();
+    }
     
-    render() {        
+    render() {
+        console.log('render once');
+        
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
         }
@@ -94,7 +172,8 @@ class Game extends Component {
         return (
             <div className={"muieee"}>
                 <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
-                <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo}/>
+                <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo} 
+                    userHand={this.state.userHand} />
                 <Grid container>
                     <Grid item xs={3}>
                         <Grid container>
