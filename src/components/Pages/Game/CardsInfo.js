@@ -74,12 +74,7 @@ class CardsInfo extends React.Component {
             drawerClasses.push(classes.drawerOpenY);
         }
 
-        let someCards = [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'},
-        {text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'},
-            {text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'},
-            {text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}];
-
-        someCards = [{text:'Throwing grapes at a man until he loses touch with reality.', type:'white'}, 
+        let someCards = [{text:'Throwing grapes at a man until he loses touch with reality.', type:'white'}, 
                         {text:'My Uber driver, Pavel.', type:'white'}, 
                         {text:'The Hamburglar.', type:'white'},
                         {text:'A stray pube.', type:'white'}, 
@@ -90,16 +85,13 @@ class CardsInfo extends React.Component {
                         {text:'An Oedipus complex.', type:'white'},
                         {text:'Scientology.', type:'white'}];
 
-
-        console.log(someCards);
         console.log(this.state.cards);
 
         return (
             <nav className={drawerClasses.join(' ')} ref={this.setWrapperRef}>
                 <CloseIcon onClick={this.props.close}/>
                 <Grid item>
-                    {/*<CardSet cards={this.state.cards} />*/}
-                    <CardSet cards={ someCards } />
+                    <CardSet cards={this.state.cards} cardClass={'playCard'}/>
                 </Grid>
             </nav>
         );

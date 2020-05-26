@@ -13,8 +13,11 @@ function Card(props) {
 
     const { classes } = props;
 
+    console.log("~~~");
+    console.log(props.cardClass);
+
     return (
-        <Box clone pt={2} pr={1} pb={1} pl={2} className={classes[props.type + "Card"]}>
+        <Box clone pt={2} pr={1} pb={1} pl={2} className={classes[props.type + "Card"] + ' '+ props.cardClass}>
             <Paper elevation={3}>
                 <Typography style={{fontSize: fontSize}}>
                     {props.text}

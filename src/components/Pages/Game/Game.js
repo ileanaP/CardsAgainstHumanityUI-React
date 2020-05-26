@@ -159,6 +159,10 @@ class Game extends Component {
             })
             .catch();
     }
+
+    someClick = () => {
+        console.log('some click');
+    }
     
     render() {
         console.log('render once');
@@ -189,34 +193,34 @@ class Game extends Component {
                     <Grid item xs={8}>
                         <Grid container>
                         <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'}  cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'}  cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                             <Grid item>
-                                <CardSet cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
+                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
                             </Grid>
                         </Grid>
                         

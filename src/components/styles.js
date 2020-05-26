@@ -107,16 +107,25 @@ export const styles = {
         display: 'inline-block',
         width: '100px',
         height: '150px',
-        margin: '15px 5px'
+        margin: '15px 5px',
+        verticalAlign: 'top',
+        '&:hover': {
+            backgroundColor: '#ffd280',
+            color: 'darkgreen'
+        }
     },
     cardset: {
-        backgroundColor: 'moccasin',
+        /*backgroundColor: 'moccasin',*/
         margin: '5px 5px',
         padding: '0px 10px',
         '&:hover': {
-            backgroundColor: 'darkkhaki',
-            cursor: 'pointer'
-        }
+            /*backgroundColor: 'darkkhaki',*/
+            cursor: 'pointer',
+            '& .resCard': {
+                backgroundColor: '#ffb833',
+                color: 'white'
+            }
+        },
     },
     rootSmtg: {
         '& label.Mui-focused': {

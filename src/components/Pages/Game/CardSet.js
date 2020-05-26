@@ -8,19 +8,33 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { styles } from '../../styles.js';
 
 
-function CardSet(props) {
+class CardSet extends Component {
 
-    const { classes } = props;
+/*     constructor(props) {
+        super(props);
+    } */
 
-    return (
-        <Box className={classes.cardset}>
-            {(props.cards).map( (card) => {
-                return (
-                    <Card type={card.type} text={card.text} />
-                );
-            })}
-        </Box>
-    );
+    state = {
+        backgroundColor: 'red'
+    }
+
+    render()
+    {
+        const { classes } = this.props;
+
+
+
+        return (
+            <Box className={classes.cardset} 
+                onClick={() => {this.props.onClick();}}>
+                {(this.props.cards).map( (card) => {
+                    return (
+                        <Card type={card.type} text={card.text} cardClass={this.props.cardClass}/>
+                    );
+                })}
+            </Box>
+        );
+    }
 }
 
 
