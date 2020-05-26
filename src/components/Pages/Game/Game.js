@@ -36,7 +36,8 @@ class Game extends Component {
             cardsInfoOpen: false,
             cards: [],
             user: user,
-            userHand: []
+            userHand: [],
+            activeCardset: 0
         }
 
         this.box = null;
@@ -160,12 +161,15 @@ class Game extends Component {
             .catch();
     }
 
-    someClick = () => {
-        console.log('some click');
+    updateGame = (id) => {
+        this.setState({
+            activeCardset: (this.state.activeCardset == id) ? 0 : id
+        });
     }
     
     render() {
-        console.log('render once');
+        console.log('if I render once, I render 1000 times');
+        console.log(this.state.activeCardset);
         
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
@@ -192,36 +196,32 @@ class Game extends Component {
                     </Grid>
                     <Grid item xs={8}>
                         <Grid container>
-                        <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'}  cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'}  cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
-                            <Grid item>
-                                <CardSet onClick={this.someClick} cardClass={'resCard'} cards={ [{text:'ala bala portocalaa', type:'white'}, {text:'ala bala portocalaa', type:'white'}, {text:'alaa balaa portocalaaa', type:'white'}] } />
-                            </Grid>
+                            {([...Array(6).keys()]).map( (card) => {
+                                if(card == 0)
+                                    return (<div></div>);
+                                
+                                let cardss;
+
+                                switch(card % 3)
+                                {
+                                    case 0: cardss = [{text:'ala bala portocalaa', type:'white'}, 
+                                                        {text:'ala bala portocalaa', type:'white'}, 
+                                                        {text:'alaa balaa portocalaaa', type:'white'}];
+                                            break;
+                                    case 1: cardss = [{text:'ala bala portocalaa', type:'white'}, 
+                                            {text:'alaa balaa portocalaaa', type:'white'}];
+                                            break;
+                                    case 2: cardss = [{text:'alaa balaa portocalaaa', type:'white'}];
+                                            break;
+                                }
+                                return (
+                                    <Grid item>
+                                        <CardSet playerId={card} onClick={this.updateGame}
+                                            selected={this.state.activeCardset == card ? true : false} 
+                                            cardClass={'resCard'} cards={ cardss } />
+                                    </Grid>
+                                );
+                            })}
                         </Grid>
                         
                     </Grid>

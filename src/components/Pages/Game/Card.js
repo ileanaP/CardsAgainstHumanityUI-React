@@ -7,25 +7,68 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { styles } from '../../styles.js';
 
 
-function Card(props) {
+class  Card extends Component {
 
-    let fontSize = props.type == 'white' ? (props.text.length > 91 ? 12 : 16) : (props.text.length > 135 ? 14 : 16);
+    constructor(props){
+        super(props);
 
-    const { classes } = props;
+        let fontSize =  16;
 
-    console.log("~~~");
-    console.log(props.cardClass);
+        if(props.type == 'white')
+        {
+            if(props.text.length > 91)
+                fontSize = 12;
+        } 
+        else
+        {
+            if(props.text.length > 135)
+                fontSize =  14;
+        }
 
-    return (
-        <Box clone pt={2} pr={1} pb={1} pl={2} className={classes[props.type + "Card"] + ' '+ props.cardClass}>
-            <Paper elevation={3}>
-                <Typography style={{fontSize: fontSize}}>
-                    {props.text}
-                </Typography>
-            </Paper>
-            
-        </Box>
-    );
+        this.state = {
+            fontSize: fontSize,
+            selected: false
+        }
+    }
+
+    componentWillReceiveProps(props){
+        if(props.selected != this.state.selected)
+        {
+            this.setState({selected: props.selected});
+        }
+    }
+
+    render() {
+
+        const { classes } = this.props;
+
+        let click;
+
+        if(typeof this.props.onClick == 'function')
+            click = (e) => {this.props.onClick(e)}
+        else
+            click = () => {};
+
+        let classs = classes[this.props.type + "Card"] + ' '+ this.props.cardClass;
+
+        if(this.state.selected)
+            classs += ' '+ classes['selected'];
+        else
+            classs += ' NOT selected';
+
+        return (
+            <Box clone pt={2} pr={1} pb={1} pl={2} 
+                className={classs}
+                onClick={() => {this.props.onClick(this.props.id)}}>
+                <Paper elevation={3}>
+                    <Typography style={{fontSize: this.state.fontSize}}>
+                        {this.props.text}
+                    </Typography>
+                </Paper>
+                
+            </Box>
+        );
+    }
 }
 
 

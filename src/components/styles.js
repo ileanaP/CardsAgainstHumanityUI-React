@@ -114,6 +114,10 @@ export const styles = {
             color: 'darkgreen'
         }
     },
+    selected: {
+        backgroundColor: '#ffd280',
+        color: 'darkgreen'
+    },
     cardset: {
         /*backgroundColor: 'moccasin',*/
         margin: '5px 5px',
@@ -126,6 +130,12 @@ export const styles = {
                 color: 'white'
             }
         },
+    },
+    selectedCardset: {
+        '& .resCard': {
+            backgroundColor: '#ffb833',
+            color: 'white'
+        }
     },
     rootSmtg: {
         '& label.Mui-focused': {

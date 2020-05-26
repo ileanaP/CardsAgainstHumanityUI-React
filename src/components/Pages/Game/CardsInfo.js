@@ -56,6 +56,7 @@ class CardsInfo extends React.Component {
 
         userHand.forEach(x => {
             card = {
+                id: x.id,
                 text: x.text,
                 type: x.type
             }
