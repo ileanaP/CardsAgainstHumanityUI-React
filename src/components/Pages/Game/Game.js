@@ -18,6 +18,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { styles } from '../../styles.js';
 import Burger from '../../addons/Burger';
 import { useParams, Redirect } from "react-router-dom";
+import Pusher from 'pusher-js';
 
 class Game extends Component {
 
@@ -37,7 +38,10 @@ class Game extends Component {
             cards: [],
             user: user,
             userHand: [],
-            activeCardset: 0
+            activeCardset: 0,
+            players: [],
+            playersDisplay: "visible",
+            roundDisplay: "none"
         }
 
         this.box = null;
@@ -60,16 +64,49 @@ class Game extends Component {
 
     async componentDidMount() {
 
-        const canUserAccessGame = this.canUserAccessGame();
+        this.canUserAccessGame().then(stuff => {
+            if(!this.allowedToPlay)
+            {
+                console.log('not allowed to play');
+                //this.setState({redirect: '/'});
+            }
+            else
+            {
+                this.fetchPlayers().then(stuff => {
+                    console.log('stuff');
+                });
+
+            }
+        });
+
+
+
+
         const fetchGameData = this.fetchGameData();
         const fetchRoundData = this.fetchRoundData();
 
-        Promise.all([ canUserAccessGame, fetchGameData, fetchRoundData]).then((responses) => {
-            if(!this.allowedToPlay || this.box == null || this.round == null )
-                this.setState({redirect: '/' });
-            else
-            {
-                const fetchCardData = this.fetchCardData(this.round['card_data']);
+        const pusher = new Pusher('444709322b87f8e9e8f1', {
+            cluster: 'eu',
+            encrypted: true
+          });
+
+        let channel = pusher.subscribe("game." + this.state.id);
+        
+        channel.bind("App\\Events\\PlayerEnter", player => {
+            console.log("player enter::: ", player);
+            this.addPlayer(player);
+        });
+
+        channel.bind("App\\Events\\PlayerLeave", player => {
+            console.log("player leave::: ", player);
+            this.removePlayer(player);
+        });
+
+        Promise.all([ fetchGameData, fetchRoundData]).then((responses) => {
+
+                //this.box == null || this.round == null
+
+                /* const fetchCardData = this.fetchCardData(this.round['card_data']);
                 const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
 
                 Promise.all([ fetchCardData, fetchPlayerCards]).then((responses) => {
@@ -87,9 +124,22 @@ class Game extends Component {
                             cards: this.cards
                         });
                     }
-                });
-            }
+                }); */
         });
+    }
+
+    removePlayer(player){
+        let players = this.state.players;
+        players = players.filter(p => (p.id != player.id && p.name != player.name));
+        
+        this.setState({players: players});
+    }
+
+    addPlayer(player){
+        let players = this.state.players;
+        players.push(player);
+
+        this.setState({players: players});
     }
 
     async fetchRoundData()
@@ -132,14 +182,34 @@ class Game extends Component {
             });
     }
 
+    async fetchPlayers(){
+        await Axios.get(global.api + 'games/' + this.state.id + '/users')
+            .then(data => {
+
+                let players = data['data'].map((elem) => {
+                    return {id: elem.id, name: elem.name}
+                });
+
+                this.setState({
+                    players: players
+                });
+            })
+            .catch(error => {
+                console.log("fetchPlayers error");
+                //this.setState({redirect: '/'});
+            });
+    }
+
     async fetchGameData() {
         await Axios.get(global.api + 'games/' + this.state.id)
             .then(data => {
+                console.log(data['data']);
                 this.box = data['data'];
                 //this.setState({box: [ data['data'] ] });
             })
             .catch(error => {
-                this.setState({redirect: '/'});
+                console.log("fetchGameData error");
+                //this.setState({redirect: '/'});
             });
     }
 
@@ -167,10 +237,7 @@ class Game extends Component {
         });
     }
     
-    render() {
-        console.log('if I render once, I render 1000 times');
-        console.log(this.state.activeCardset);
-        
+    render() {        
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
         }
@@ -178,63 +245,81 @@ class Game extends Component {
         const { classes } = this.props;
 
         return (
-            <div className={"muieee"}>
-                <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
-                <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo} 
-                    userHand={this.state.userHand} />
-                <Grid container>
-                    <Grid item xs={3}>
+            <Grid container>
+                <Grid item>
+                    <div className={"players"} style={{display: this.state.playersDisplay}}>
+                        <Box className={classes.centeredBox}>
+                            <Box clone pt={2} pr={1} pb={1} pl={2} width={400} height={500}>
+                                <Paper elevation={3} style={{textAlign: "center"}}>
+                                    <p className={classes.fancyTitle}>Players</p>
+                                    {this.state.players.map((player) => {
+                                        return(
+                                            <li>{player.name}</li>
+                                        );
+                                    })}
+                                </Paper>
+                            </Box>
+                        </Box>
+                    </div>
+                    <div className={"round"} style={{display: this.state.roundDisplay}}>
+                        <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
+                        <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo} 
+                            userHand={this.state.userHand} />
                         <Grid container>
-                            <Grid item>
-                                <Card text={"ala balla"} type="black" />
-                            </Grid>
-                            <Grid item>
-                                <Btn bgColor={"gray"} text={"Leave Game"}
-                                     onClick={this.props.leaveGame} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Grid container>
-                            {([...Array(6).keys()]).map( (card) => {
-                                if(card == 0)
-                                    return (<div></div>);
-                                
-                                let cardss;
-
-                                switch(card % 3)
-                                {
-                                    case 0: cardss = [{text:'ala bala portocalaa', type:'white'}, 
-                                                        {text:'ala bala portocalaa', type:'white'}, 
-                                                        {text:'alaa balaa portocalaaa', type:'white'}];
-                                            break;
-                                    case 1: cardss = [{text:'ala bala portocalaa', type:'white'}, 
-                                            {text:'alaa balaa portocalaaa', type:'white'}];
-                                            break;
-                                    case 2: cardss = [{text:'alaa balaa portocalaaa', type:'white'}];
-                                            break;
-                                }
-                                return (
+                            <Grid item xs={3}>
+                                <Grid container>
                                     <Grid item>
-                                        <CardSet playerId={card} onClick={this.updateGame}
-                                            selected={this.state.activeCardset == card ? true : false} 
-                                            cardClass={'resCard'} cards={ cardss } />
+                                        <Card text={"ala balla"} type="black" />
                                     </Grid>
-                                );
-                            })}
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Grid container>
+                                    {([...Array(6).keys()]).map( (card) => {
+                                        if(card == 0)
+                                            return (<div></div>);
+                                        
+                                        let cardss;
+
+                                        switch(card % 3)
+                                        {
+                                            case 0: cardss = [{text:'ala bala portocalaa', type:'white'}, 
+                                                                {text:'ala bala portocalaa', type:'white'}, 
+                                                                {text:'alaa balaa portocalaaa', type:'white'}];
+                                                    break;
+                                            case 1: cardss = [{text:'ala bala portocalaa', type:'white'}, 
+                                                    {text:'alaa balaa portocalaaa', type:'white'}];
+                                                    break;
+                                            case 2: cardss = [{text:'alaa balaa portocalaaa', type:'white'}];
+                                                    break;
+                                        }
+                                        return (
+                                            <Grid item>
+                                                <CardSet playerId={card} onClick={this.updateGame}
+                                                    selected={this.state.activeCardset == card ? true : false} 
+                                                    cardClass={'resCard'} cards={ cardss } />
+                                            </Grid>
+                                        );
+                                    })}
+                                </Grid>
+                                
+                            </Grid>
+                            <div className={classes.sideHustle}>
+                                <div className={classes.sideHustleTop}>
+                                    <Burger bgColor={"purple"} click={this.togglePlayerInfo} />
+                                </div>
+                                <div className={classes.sideHustleBottom}>
+                                    <Burger bgColor={"purple"} click={this.toggleCardsInfo} />
+                                </div>
+                            </div>
                         </Grid>
-                        
-                    </Grid>
-                    <div className={classes.sideHustle}>
-                        <div className={classes.sideHustleTop}>
-                            <Burger bgColor={"purple"} click={this.togglePlayerInfo} />
-                        </div>
-                        <div className={classes.sideHustleBottom}>
-                            <Burger bgColor={"purple"} click={this.toggleCardsInfo} />
-                        </div>
                     </div>
                 </Grid>
-            </div>
+                <Grid item style={{position: "fixed", bottom: "0", left: "30"}}>
+                    <Btn bgColor={"gray"} text={"Leave Game"}
+                        onClick={this.props.leaveGame} />
+                </Grid>
+            </Grid>
         );
     }
 }

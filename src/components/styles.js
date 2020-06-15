@@ -220,5 +220,11 @@ export const styles = {
         position: "fixed",
         marginBottom:"106px",
         right:"85px",
+    },
+    fancyTitle: {
+        textDecoration: "underline",
+        fontFamily: "Lucida Console",
+        fontSize: "32px",
+        fontStyle: "italic"
     }
 }
