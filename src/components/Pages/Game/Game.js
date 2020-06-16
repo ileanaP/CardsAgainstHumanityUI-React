@@ -31,7 +31,6 @@ class Game extends Component {
 
         this.state = {
             id: idNr,
-            box: [],
             display: 'none',
             playerInfoOpen: false,
             cardsInfoOpen: false,
@@ -44,7 +43,7 @@ class Game extends Component {
             roundDisplay: "none"
         }
 
-        this.box = null;
+        this.game = null;
         this.round = null;
         this.cards = null;
         this.userCards = null;
@@ -64,6 +63,8 @@ class Game extends Component {
 
     async componentDidMount() {
 
+        this.subscribe();
+
         this.canUserAccessGame().then(stuff => {
             if(!this.allowedToPlay)
             {
@@ -72,8 +73,18 @@ class Game extends Component {
             }
             else
             {
-                this.fetchPlayers().then(stuff => {
-                    console.log('stuff');
+                Promise.all([ this.fetchPlayers(), this.fetchGameData()]).then((responses) => {
+                    let players = this.state.players.map((obj) => {
+                        if(obj.id == this.game.creator_id)
+                        {
+                            obj.creator = true;
+                        }
+                        return  obj;
+                    });
+
+                    this.setState({
+                        players: players
+                    });
                 });
 
             }
@@ -85,26 +96,7 @@ class Game extends Component {
         const fetchGameData = this.fetchGameData();
         const fetchRoundData = this.fetchRoundData();
 
-        const pusher = new Pusher('444709322b87f8e9e8f1', {
-            cluster: 'eu',
-            encrypted: true
-          });
-
-        let channel = pusher.subscribe("game." + this.state.id);
-        
-        channel.bind("App\\Events\\PlayerEnter", player => {
-            console.log("player enter::: ", player);
-            this.addPlayer(player);
-        });
-
-        channel.bind("App\\Events\\PlayerLeave", player => {
-            console.log("player leave::: ", player);
-            this.removePlayer(player);
-        });
-
         Promise.all([ fetchGameData, fetchRoundData]).then((responses) => {
-
-                //this.box == null || this.round == null
 
                 /* const fetchCardData = this.fetchCardData(this.round['card_data']);
                 const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
@@ -125,6 +117,25 @@ class Game extends Component {
                         });
                     }
                 }); */
+        });
+    }
+
+    subscribe() {
+        const pusher = new Pusher('444709322b87f8e9e8f1', {
+            cluster: 'eu',
+            encrypted: true
+          });
+
+        let channel = pusher.subscribe("game." + this.state.id);
+        
+        channel.bind("App\\Events\\PlayerEnter", player => {
+            console.log("player enter::: ", player);
+            this.addPlayer(player);
+        });
+
+        channel.bind("App\\Events\\PlayerLeave", player => {
+            console.log("player leave::: ", player);
+            this.removePlayer(player);
         });
     }
 
@@ -187,8 +198,16 @@ class Game extends Component {
             .then(data => {
 
                 let players = data['data'].map((elem) => {
-                    return {id: elem.id, name: elem.name}
+                    return {id: elem.id, name: elem.name, creator: false}
                 });
+
+                players = this.state.players.concat(players);
+                
+                players = players.filter((thing, index, self) =>
+                    index === self.findIndex((t) => (
+                        t.place === thing.place && t.name === thing.name
+                    ))
+                )
 
                 this.setState({
                     players: players
@@ -203,8 +222,7 @@ class Game extends Component {
     async fetchGameData() {
         await Axios.get(global.api + 'games/' + this.state.id)
             .then(data => {
-                console.log(data['data']);
-                this.box = data['data'];
+                this.game = data['data'];
                 //this.setState({box: [ data['data'] ] });
             })
             .catch(error => {
@@ -236,6 +254,10 @@ class Game extends Component {
             activeCardset: (this.state.activeCardset == id) ? 0 : id
         });
     }
+
+    startRound = () => {
+        console.log("startRound is called :o");
+    }
     
     render() {        
         if (this.state.redirect) {
@@ -246,17 +268,33 @@ class Game extends Component {
 
         return (
             <Grid container>
-                <Grid item>
+                <Grid item style={{width:"100%"}}>
                     <div className={"players"} style={{display: this.state.playersDisplay}}>
                         <Box className={classes.centeredBox}>
                             <Box clone pt={2} pr={1} pb={1} pl={2} width={400} height={500}>
                                 <Paper elevation={3} style={{textAlign: "center"}}>
-                                    <p className={classes.fancyTitle}>Players</p>
-                                    {this.state.players.map((player) => {
-                                        return(
-                                            <li>{player.name}</li>
-                                        );
-                                    })}
+                                    <Grid container direction="column" style={{height:"100%"}}>
+                                        <Grid item style={{height:"80%"}}>
+                                            <div style={{display: "inlineBlock", height: "190px"}}>
+                                                <p className={classes.fancyTitle}>Players</p>
+                                                {this.state.players.map((player) => {
+
+                                    return(
+                                        <li className={player.creator ? classes.creatorClass : ''}
+                                                style={{listStyleType: "none"}}>
+                                                    {player.name + (player.creator ? " (GM)" : "")}
+                                        </li>
+                                    );
+
+                                                })}
+                                            </div>
+                                            <p className={classes.fancyTitle}>Stats</p>
+                                        </Grid>
+                                        <Grid item style={{height:"20%"}}>
+                                            <Btn bgColor={"gray"} text={"Start Round"} className={classes.startRound}
+                                            onClick={this.startRound} />
+                                        </Grid>
+                                    </Grid>
                                 </Paper>
                             </Box>
                         </Box>

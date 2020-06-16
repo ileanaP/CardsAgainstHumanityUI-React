@@ -226,5 +226,12 @@ export const styles = {
         fontFamily: "Lucida Console",
         fontSize: "32px",
         fontStyle: "italic"
+    },
+    startRound: {
+        bottom: "0"
+    },
+    creatorClass: {
+        fontWeight: "bold",
+        color: "purple"
     }
 }
