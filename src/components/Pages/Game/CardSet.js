@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Card from './Card';
 import { withStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { styles } from '../../styles.js';
+import { styles } from '../../../lib/styles.js';
 
 
 class CardSet extends Component {

@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import CloseIcon from '@material-ui/icons/Close';
 import CardSet from './CardSet';
 import { withStyles } from '@material-ui/core/styles';
-import { styles } from '../../styles.js';
+import { styles } from '../../../lib/styles.js';
 import PropTypes from 'prop-types'
 
 

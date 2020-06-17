@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
-import { styles } from '../styles.js';
+import { styles } from '../../lib/styles.js';
 
 function drawerToggleButton(props)
 {

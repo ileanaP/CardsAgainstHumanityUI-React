@@ -15,10 +15,11 @@ import Card from './Card';
 import CardSet from './CardSet';
 import { withStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { styles } from '../../styles.js';
+import { styles } from '../../../lib/styles.js';
 import Burger from '../../addons/Burger';
 import { useParams, Redirect } from "react-router-dom";
 import Pusher from 'pusher-js';
+import {removeDuplicates, notif} from '../../../lib/utils';
 
 class Game extends Component {
 
@@ -28,6 +29,8 @@ class Game extends Component {
         let id = this.props.match.params.id;
         let idNr = !isNaN(id) ? Number(id) : 0;
         let user = JSON.parse(localStorage.getItem('userData'));
+        user.creator = undefined;
+        user.confirmed = false;
 
         this.state = {
             id: idNr,
@@ -40,10 +43,10 @@ class Game extends Component {
             activeCardset: 0,
             players: [],
             playersDisplay: "visible",
-            roundDisplay: "none"
+            roundDisplay: "none",
+            game: []
         }
 
-        this.game = null;
         this.round = null;
         this.cards = null;
         this.userCards = null;
@@ -69,25 +72,35 @@ class Game extends Component {
             if(!this.allowedToPlay)
             {
                 console.log('not allowed to play');
-                //this.setState({redirect: '/'});
+                return;
             }
-            else
-            {
-                Promise.all([ this.fetchPlayers(), this.fetchGameData()]).then((responses) => {
-                    let players = this.state.players.map((obj) => {
-                        if(obj.id == this.game.creator_id)
-                        {
-                            obj.creator = true;
-                        }
-                        return  obj;
-                    });
 
-                    this.setState({
-                        players: players
-                    });
+            this.fetchPlayers().then(stuff => {
+                let players = this.state.players.map((obj) => {
+                    if(obj.id == this.state.game.creator_id)
+                    {
+                        obj.creator = true;
+                    }
+                    return  obj;
                 });
 
-            }
+                this.setState({
+                    players: players
+                });
+
+                this.fetchGameData().then(stuff => {
+                    let user = this.state.user;
+                    
+                    user.creator = (this.state.user.id == this.state.game.creator_id) ? true : false;
+
+                    this.setState({user: user});
+                });
+
+            });
+
+            Promise.all([ this.fetchPlayers(), this.fetchGameData()]).then((responses) => {
+                
+            });
         });
 
 
@@ -137,6 +150,15 @@ class Game extends Component {
             console.log("player leave::: ", player);
             this.removePlayer(player);
         });
+
+        channel.bind("App\\Events\\GameEnded", game => {
+            console.log("game ended::: ", game);
+            notif("Game was ended. Blame it on the boogie. <br/>" +
+                        "You shall be returned to the games hub.");
+            setTimeout(() => {
+                this.setState({redirect: "/"});
+            }, 5000);
+        });
     }
 
     removePlayer(player){
@@ -148,6 +170,10 @@ class Game extends Component {
 
     addPlayer(player){
         let players = this.state.players;
+
+        player.creator = false;
+        player.confirmed = false;
+
         players.push(player);
 
         this.setState({players: players});
@@ -202,12 +228,7 @@ class Game extends Component {
                 });
 
                 players = this.state.players.concat(players);
-                
-                players = players.filter((thing, index, self) =>
-                    index === self.findIndex((t) => (
-                        t.place === thing.place && t.name === thing.name
-                    ))
-                )
+                players = removeDuplicates(players);
 
                 this.setState({
                     players: players
@@ -222,8 +243,7 @@ class Game extends Component {
     async fetchGameData() {
         await Axios.get(global.api + 'games/' + this.state.id)
             .then(data => {
-                this.game = data['data'];
-                //this.setState({box: [ data['data'] ] });
+                this.setState({game: data['data'] });
             })
             .catch(error => {
                 console.log("fetchGameData error");
@@ -258,13 +278,71 @@ class Game extends Component {
     startRound = () => {
         console.log("startRound is called :o");
     }
+
+    confirm = async (player) => {
+
+    }
+
+    eject = () => {
+        
+    }
+
+    constructPlayerLine = (player) => {
+        let link;
+
+        if(player.id == this.state.user.id && !player.confirmed)
+        {
+            link = <a onClick={this.confirm(player)} href="#">(confirm)</a>; 
+        }
+        else
+        {
+            console.log(this.state.user.creator && this.state.user.confirmed + "~~");
+            if(this.state.user.creator && this.state.user.confirmed)
+                link = <a onClick={this.eject(player)} href="#">(eject)</a>;
+            else
+            {
+                if(!player.confirmed && this.state.user.id == player.id)
+                    link = <a onClick={this.confirm(player)} href="#">(confirm)</a>;
+                else
+                    link = "";
+            }
+        }
+
+        let firstPart = player.name + (player.creator ? " (GM)" : "");
+        
+        return (<div>{firstPart} {link}</div>);
+    }
+
+    yesAction = () => {
+        console.log("yep this was literally called :/ ");
+    }
     
-    render() {        
+    render() {
         if (this.state.redirect) {
             return <Redirect to={this.state.redirect} />
         }
 
         const { classes } = this.props;
+
+        /* let creator = this.state.players.find(obj => {
+            return obj.id === this.state.user.id
+          })[0];
+
+        
+        console.log(creator);
+        console.log("~~~~~~~~~"); */
+
+        let actionButton;
+        
+        if(this.state.user.creator !== undefined)
+        {
+            if(this.state.user.creator)
+                actionButton = <Btn bgColor={"darkred"} text={"End Game"}
+                                    onClick={this.props.endGame} />
+            else
+                actionButton = <Btn bgColor={"gray"} text={"Leave Game"}
+                                    onClick={this.props.leaveGame} />
+        }
 
         return (
             <Grid container>
@@ -278,13 +356,17 @@ class Game extends Component {
                                             <div style={{display: "inlineBlock", height: "190px"}}>
                                                 <p className={classes.fancyTitle}>Players</p>
                                                 {this.state.players.map((player) => {
+            
 
-                                    return(
-                                        <li className={player.creator ? classes.creatorClass : ''}
-                                                style={{listStyleType: "none"}}>
-                                                    {player.name + (player.creator ? " (GM)" : "")}
-                                        </li>
-                                    );
+
+                                                    let playerLine = this.constructPlayerLine(player);
+
+                                                    return(
+                                                        <li className={player.creator ? classes.creatorClass : ''}
+                                                                style={{listStyleType: "none"}}>
+                                                                    {playerLine}
+                                                        </li>
+                                                    );
 
                                                 })}
                                             </div>
@@ -354,8 +436,7 @@ class Game extends Component {
                     </div>
                 </Grid>
                 <Grid item style={{position: "fixed", bottom: "0", left: "30"}}>
-                    <Btn bgColor={"gray"} text={"Leave Game"}
-                        onClick={this.props.leaveGame} />
+                    {actionButton}
                 </Grid>
             </Grid>
         );

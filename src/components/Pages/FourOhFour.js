@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
-import { styles } from '../styles.js';
+import { styles } from '../../lib/styles.js';
 
 
 function FourOhFour(props){

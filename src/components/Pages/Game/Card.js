@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { styles } from '../../styles.js';
+import { styles } from '../../../lib/styles.js';
 
 
 class  Card extends Component {

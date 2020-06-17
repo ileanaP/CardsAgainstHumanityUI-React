@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import { withStyles } from '@material-ui/core/styles';
-import { styles } from '../styles.js';
+import { styles } from '../../lib/styles.js';
 
 function NotifMsg(props) {
 

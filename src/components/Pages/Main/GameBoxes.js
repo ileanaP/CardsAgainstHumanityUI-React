@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Btn from '../../addons/Btn';
 import { withStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { styles } from '../../styles.js';
+import { styles } from '../../../lib/styles.js';
 
 class GameBoxes extends Component {
 

@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Btn from '../../addons/Btn';
-import { styles } from '../../styles.js';
+import { styles } from '../../../lib/styles.js';
 
 
 class Main extends Component {

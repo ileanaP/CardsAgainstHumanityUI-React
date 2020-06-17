@@ -1,7 +1,7 @@
 import React from 'react';
 import CloseIcon from '@material-ui/icons/Close';
 import { withStyles } from '@material-ui/core/styles';
-import { styles } from '../../styles.js';
+import { styles } from '../../../lib/styles.js';
 import PropTypes from 'prop-types'
 
 class playerInfo extends React.Component {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
-import { styles } from '../styles.js';
+import { styles } from '../../lib/styles.js';
 
 function Btn(props) {
 

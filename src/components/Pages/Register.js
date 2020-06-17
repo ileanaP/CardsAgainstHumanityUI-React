@@ -8,7 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Btn from '../addons/Btn';
 import NotifMsg from '../addons/NotifMsg';
 import { Redirect } from 'react-router-dom';
-import { styles } from '../styles.js';
+import { styles } from '../../lib/styles.js';
 import Axios from 'axios';
 //import Cookies from 'universal-cookie';
 import { render } from '@testing-library/react';

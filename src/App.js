@@ -18,9 +18,10 @@ import FourOhFour from "./components/Pages/FourOhFour";
 import Game from './components/Pages/Game/Game';
 import WaitRedirect from './components/addons/WaitRedirect';
 import Axios from 'axios';
+import {notif} from './lib/utils';
 
 import './App.css';
-import './globals.js';
+import './lib/globals.js';
 
 class App extends Component {
   constructor(){
@@ -66,6 +67,22 @@ class App extends Component {
       }); 
   }
 
+  endGame = async (game) => {
+
+    let deleteAfterAll = async () => {
+      await Axios.delete(global.api + 'games/' + game.id)
+      .then(data => {
+        notif({msg: "Game was deleted. I hope you're happy"});
+      })
+      .catch(error => {
+          console.log(error);
+          console.log('it got here fortunately too too too or nu nu nu :o');
+      });
+    }
+
+    notif({msg: "notif", timeout:0, buttons: true, yesAction: deleteAfterAll}); 
+  }
+
   drawerToggleClickHandler = () => {
     this.setState((prevState) => {
       return {sideDrawerOpen: !prevState.sideDrawerOpen};
@@ -109,7 +126,7 @@ class App extends Component {
               <div className="content">
                 <div>
                   <Switch>
-                    <Route path="/login" render={() => <Login toggleLoginState={this.toggleLoginState} />}/>
+                  <Route path="/login" render={() => <Login toggleLoginState={this.toggleLoginState} />}/>
                     <Route path="/logout" render={() => <Logout toggleLoginState={this.toggleLoginState} />}/>
                     <Route path="/register" exact component={Register}/>
                     <Route path="/game/:id"  render={(props) => <Game {...props} leaveGame={this.leaveGame}/> }/>

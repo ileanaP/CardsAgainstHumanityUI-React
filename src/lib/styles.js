@@ -61,6 +61,18 @@ export const styles = {
         backgroundColor: 'deeppink',
         color: 'whitesmoke'
     },
+    darkredBg: {
+        backgroundColor: 'darkred',
+        color: 'whitesmoke',
+        '&:hover': {
+            backgroundColor: 'whitesmoke',
+            color: 'gray',
+        },
+        '&:active': {
+            backgroundColor: 'whitesmoke',
+            color: 'gray',
+        }
+    },
     formItem: {
         width: '250px'
     },
@@ -233,5 +245,8 @@ export const styles = {
     creatorClass: {
         fontWeight: "bold",
         color: "purple"
-    }
+    },
+/*     myCustomContainer: {
+        width: "500px"
+    } */
 }
