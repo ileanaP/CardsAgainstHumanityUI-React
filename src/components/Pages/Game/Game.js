@@ -153,8 +153,17 @@ class Game extends Component {
 
         channel.bind("App\\Events\\GameEnded", game => {
             console.log("game ended::: ", game);
-            notif("Game was ended. Blame it on the boogie. <br/>" +
-                        "You shall be returned to the games hub.");
+
+            if(!this.state.user.creator)
+            {
+                notif("Game was ended. Blame it on the boogie. <br/>\
+                    You shall be returned to the games hub.");
+            }
+
+            let user = this.state.user;
+            user['game'] = null;
+            localStorage.setItem('userData', JSON.stringify(user));
+
             setTimeout(() => {
                 this.setState({redirect: "/"});
             }, 5000);
@@ -208,11 +217,20 @@ class Game extends Component {
                 }
             })
             .catch(error => {
-                if(error.response !== undefined && error.response.status == 403) 
-                {
-                    this.allowedToPlay = false;
+                if(error.response !== undefined)
+                { 
+                    if(error.response.status == 403) 
+                    {
+                        this.allowedToPlay = false;
+                    }
+                    if(error.response.status == 404) 
+                    {
+                        this.setState({
+                            redirect: "/404"
+                        });
+                    }
                 }
-                else 
+                else
                 {
                     console.log(error);
                 }
@@ -292,17 +310,17 @@ class Game extends Component {
 
         if(player.id == this.state.user.id && !player.confirmed)
         {
-            link = <a onClick={this.confirm(player)} href="#">(confirm)</a>; 
+            link = <a onClick={(player) => {this.confirm(player)}} href="#">(confirm)</a>; 
         }
         else
         {
             console.log(this.state.user.creator && this.state.user.confirmed + "~~");
             if(this.state.user.creator && this.state.user.confirmed)
-                link = <a onClick={this.eject(player)} href="#">(eject)</a>;
+                link = <a onClick={() => {this.eject(player)}} href="#">(eject)</a>;
             else
             {
                 if(!player.confirmed && this.state.user.id == player.id)
-                    link = <a onClick={this.confirm(player)} href="#">(confirm)</a>;
+                    link = <a onClick={() => {this.confirm(player)}} href="#">(confirm)</a>;
                 else
                     link = "";
             }
@@ -337,8 +355,11 @@ class Game extends Component {
         if(this.state.user.creator !== undefined)
         {
             if(this.state.user.creator)
+            {
+                let game = this.state.game;
                 actionButton = <Btn bgColor={"darkred"} text={"End Game"}
-                                    onClick={this.props.endGame} />
+                                    onClick={() => {this.props.endGame(game)}} />
+            }
             else
                 actionButton = <Btn bgColor={"gray"} text={"Leave Game"}
                                     onClick={this.props.leaveGame} />

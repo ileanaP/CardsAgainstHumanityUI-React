@@ -15,6 +15,10 @@ export function removeDuplicates(arr) {
 
 export async function notif(params)
 {
+    
+    if(typeof params == "string")
+        params = {msg: params}
+
     params = {
         msg: (params.msg !== undefined ? params.msg : ""), 
         timeout: (params.timeout !== undefined ? params.timeout : 5000), 
@@ -26,6 +30,7 @@ export async function notif(params)
     params.buttons = params.buttons ? [
                                       Noty.button('YES', 'btn btn-success', function () {
                                           params.yesAction();
+                                          n.close();
                                       }, {id: 'button1', 'data-status': 'ok'}),
                                   
                                       Noty.button('NO', 'btn btn-error', function () {
