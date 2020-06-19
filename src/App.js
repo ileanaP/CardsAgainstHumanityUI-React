@@ -34,39 +34,6 @@ class App extends Component {
     };
   }
 
-  leaveGame = async () => {
-
-    console.log('it got fortunately here');
-
-       let user = JSON.parse(localStorage.getItem('userData'));
-
-    console.log('it got here fortunately too');
-
-    console.log(user);
-
-      if(user == null || user['game'] == null)
-          return;
-
-      
-
-      const callLink = 'games/' + user['game'] + '/users/' + user['id'] + '/remove';
-
-      await Axios.post(global.api + callLink)
-      .then(data => {
-
-        console.log('it got here fortunately too too too or da da da :o');
-
-          user['game'] = null;
-          localStorage.setItem('userData', JSON.stringify(user));
-
-          this.setState({redirect: '/'});
-      })
-      .catch(error => {
-          console.log(error);
-          console.log('it got here fortunately too too too or nu nu nu :o');
-      }); 
-  }
-
   endGame = async (game) => {
 
     let deleteAfterAll = async () => {

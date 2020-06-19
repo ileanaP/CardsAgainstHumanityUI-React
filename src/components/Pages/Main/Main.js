@@ -6,7 +6,10 @@ import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Btn from '../../addons/Btn';
 import { styles } from '../../../lib/styles.js';
+import {leaveGame} from '../../../lib/utils';
+import createHistory from 'history/createBrowserHistory'
 
+const history = createHistory();
 
 class Main extends Component {
 
@@ -43,7 +46,7 @@ class Main extends Component {
                             <Btn bgColor={"pink"} text={"Already In Game; Enter"}
                                  href={"/game/" + game}/>
                             <Btn bgColor={"gray"} text={"Leave Game"}
-                                 onClick={this.props.leaveGame}/>
+                                 onClick={() => {leaveGame().then(data => {history.go(0)})}}/>
                          </Fragment>
                 disabled = true;
                 break;

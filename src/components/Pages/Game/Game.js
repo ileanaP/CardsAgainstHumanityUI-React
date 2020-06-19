@@ -19,7 +19,7 @@ import { styles } from '../../../lib/styles.js';
 import Burger from '../../addons/Burger';
 import { useParams, Redirect } from "react-router-dom";
 import Pusher from 'pusher-js';
-import {removeDuplicates, notif} from '../../../lib/utils';
+import {removeDuplicates, notif, leaveGame} from '../../../lib/utils';
 
 class Game extends Component {
 
@@ -71,8 +71,9 @@ class Game extends Component {
         this.canUserAccessGame().then(stuff => {
             if(!this.allowedToPlay)
             {
-                console.log('not allowed to play');
-                return;
+                this.setState({
+                    redirect: "/"
+                });
             }
 
             this.fetchPlayers().then(stuff => {
@@ -97,19 +98,11 @@ class Game extends Component {
                 });
 
             });
-
-            Promise.all([ this.fetchPlayers(), this.fetchGameData()]).then((responses) => {
-                
-            });
         });
 
-
-
-
-        const fetchGameData = this.fetchGameData();
         const fetchRoundData = this.fetchRoundData();
 
-        Promise.all([ fetchGameData, fetchRoundData]).then((responses) => {
+        Promise.all([fetchRoundData]).then((responses) => {
 
                 /* const fetchCardData = this.fetchCardData(this.round['card_data']);
                 const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
@@ -362,7 +355,7 @@ class Game extends Component {
             }
             else
                 actionButton = <Btn bgColor={"gray"} text={"Leave Game"}
-                                    onClick={this.props.leaveGame} />
+                                    onClick={() => { leaveGame().then(data => { this.setState({redirect: "/"}) })}} />
         }
 
         return (
