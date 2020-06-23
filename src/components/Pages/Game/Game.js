@@ -47,7 +47,8 @@ class Game extends Component {
             roundDisplay: "none",
             loadingDisplay: "block",
             game: [],
-            stateStuff: "null ~~ " + user.id
+            stateStuff: "null ~~ " + user.id,
+            confirmedPlayers: 0
         }
 
         this.round = null;
@@ -208,7 +209,8 @@ class Game extends Component {
             this.setState({
                 players: players,
                 stateStuff: "something",
-                user: userS
+                user: userS,
+                confirmedPlayers: this.state.confirmedPlayers++
             })
 
         });
@@ -228,9 +230,14 @@ class Game extends Component {
 
         players.push(player);
 
-        console.log("***********************");
+        let confirmedPlayers = this.state.confirmedPlayers;
+        
+        confirmedPlayers = player.confirmed ? confirmedPlayers++ : confirmedPlayers;
 
-        this.setState({players: players});
+        this.setState({
+            players: players,
+            confirmedPlayers: confirmedPlayers
+        });
     }
 
     async fetchRoundData()
@@ -307,11 +314,14 @@ class Game extends Component {
                 players = this.state.players.concat(players);
                 players = removeDuplicates(players);
 
+                let confirmedPlayers = players.filter(e => e.confirmed === 1).length;
+
                 let user = this.state.user;
 
                 this.setState({
                     players: players,
-                    user: user
+                    user: user,
+                    confirmedPlayers: confirmedPlayers
                 });
             })
             .catch(error => {
@@ -355,8 +365,19 @@ class Game extends Component {
         });
     }
 
-    startRound = () => {
-        console.log("startRound is called :o");
+    startRound = async () => {
+        await Axios.post(global.api + 'games/' + this.state.id + '/rounds')
+            .then(data => {
+                console.log(data["data"]);
+
+                this.setState({
+                    playersDisplay: "none",
+                    roundDisplay: "block"
+                });
+            })
+            .catch(error => {
+
+            });
     }
 
     confirm = async (player) => {
@@ -409,6 +430,10 @@ class Game extends Component {
         console.log("yep this was literally called :/ ");
     }
 
+    pingPpl = () => {
+        notif({msg: "Ppl, confirm", type: "error"});
+    }
+
     render() {
         
         if (this.state.redirect) {
@@ -439,6 +464,15 @@ class Game extends Component {
                 actionButton = <Btn bgColor={"gray"} text={"Leave Game"}
                                     onClick={() => { leaveGame().then(e => {this.setState({redirect: "/"});}) }} />
         }
+
+        let GMActionBtn;
+
+/*         if(this.state.confirmedPlayers == this.state.players.length) */
+            GMActionBtn = <Btn bgColor={"gray"} text={"Start Round"} className={classes.startRound}
+                            onClick={this.startRound} />
+/*         else
+            GMActionBtn = <Btn bgColor={"gray"} text={"Ping Ppl to Confirm"} className={classes.startRound}
+                            onClick={this.pingPpl} /> */
 
         return (
             <Grid container>
@@ -475,8 +509,7 @@ class Game extends Component {
                                             </div>
                                         </Grid>
                                         <Grid item style={{height:"20%"}}>
-                                            <Btn bgColor={"gray"} text={"Start Round"} className={classes.startRound}
-                                            onClick={this.startRound} />
+                                            {GMActionBtn}
                                         </Grid>
                                     </Grid>
                                 </Paper>
