@@ -1,7 +1,10 @@
 import Noty from 'noty';  
 import "../../node_modules/noty/lib/noty.css";  
-import "../../node_modules/noty/lib/themes/mint.css";
+import "../../node_modules/noty/lib/themes/sunset.css";
 import Axios from 'axios';
+import createHistory from 'history/createBrowserHistory'
+
+const history = createHistory();
 
 export function removeDuplicates(arr) {
     arr = arr.filter((thing, index, self) =>
@@ -20,6 +23,8 @@ export async function notif(params)
     if(typeof params == "string")
         params = {msg: params}
 
+
+    //type: alert (dark mud green), success (light green), error (red), warning (yellow), info (blue), pink 
     params = {
         msg: (params.msg !== undefined ? params.msg : ""), 
         timeout: (params.timeout !== undefined ? params.timeout : 5000), 
@@ -40,6 +45,7 @@ export async function notif(params)
                                       ] : "";
 
     let n = new Noty({
+        theme: "sunset",
         text: params.msg,
         type: params.type,
         timeout: params.timeout,
@@ -49,23 +55,29 @@ export async function notif(params)
     }).show();
 }
 
-export async function leaveGame() 
+export async function removePlayer(playerid, gameid)
+{
+    const callLink = 'games/' + gameid + '/users/' + playerid + '/remove';
+
+    await Axios.post(global.api + callLink);
+}
+
+export async function leaveGame()
 {
     let user = JSON.parse(localStorage.getItem('userData'));
 
     if(user == null || user['game'] == null)
         return;
 
-    const callLink = 'games/' + user['game'] + '/users/' + user['id'] + '/remove';
-
-    await Axios.post(global.api + callLink)
-    .then(data => {
+    removePlayer(user.id, user['game']).then(e => {
         user['game'] = null;
         localStorage.setItem('userData', JSON.stringify(user));
 
-        this.setState({redirect: '/'});
+        history.go(0);
     })
     .catch(error => {
+        if(error.response !== undefined && error.response.status == 403)
+            notif("You cannot leave the game without ending it");
         console.log(error);
-    }); 
+    });;
 }

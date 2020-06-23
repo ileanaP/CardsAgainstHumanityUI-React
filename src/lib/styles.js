@@ -246,6 +246,10 @@ export const styles = {
         fontWeight: "bold",
         color: "purple"
     },
+    confirmedClass: {
+        fontWeight: "bold",
+        color: "green"
+    }
 /*     myCustomContainer: {
         width: "500px"
     } */
