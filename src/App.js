@@ -14,6 +14,7 @@ import Main from './components/Pages/Main/Main';
 import Login from "./components/Pages/Login";
 import Logout from "./components/Pages/Logout";
 import Register from "./components/Pages/Register";
+import NewGame from "./components/Pages/NewGame";
 import FourOhFour from "./components/Pages/FourOhFour";
 import Game from './components/Pages/Game/Game';
 import WaitRedirect from './components/addons/WaitRedirect';
@@ -99,6 +100,7 @@ class App extends Component {
                     <Route path="/game/:id"  render={(props) => 
                         <Game {...props} leaveGame={this.leaveGame} endGame={this.endGame}/> }/>
                     <Route exact path="/" render={() => <Main leaveGame={this.leaveGame}/>}/>
+                    <Route path="/newgame" exact component={NewGame}/>
                     <Route component={FourOhFour} />
                   </Switch>
                 </div>

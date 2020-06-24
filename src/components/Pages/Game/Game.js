@@ -117,11 +117,14 @@ class Game extends Component {
             });
         });
 
-        const fetchRoundData = this.fetchRoundData();
+        //const fetchRoundData = this.fetchRoundData();
 
-        Promise.all([fetchRoundData]).then((responses) => {
+        /*Promise.all([fetchRoundData]).then((responses) => {
 
-                /* const fetchCardData = this.fetchCardData(this.round['card_data']);
+            console.log("~~~~");
+            console.log(this.round);
+
+                 const fetchCardData = this.fetchCardData(this.round['card_data']);
                 const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
 
                 Promise.all([ fetchCardData, fetchPlayerCards]).then((responses) => {
@@ -139,8 +142,8 @@ class Game extends Component {
                             cards: this.cards
                         });
                     }
-                }); */
-        });
+                }); 
+        });*/
     }
 
     subscribe() {
@@ -240,17 +243,7 @@ class Game extends Component {
         });
     }
 
-    async fetchRoundData()
-    {
-        await Axios.get(global.api + 'games/' + this.state.id + '/rounds')
-        .then(data => {
-            data = data['data'];
-            this.round = data[data.length-1];            
-        })
-        .catch(error => {
-
-        });
-    }
+    
 
     async canUserAccessGame()
     {
@@ -258,8 +251,6 @@ class Game extends Component {
         {
             this.allowedToPlay = false;
         }
-
-        console.log(global.api + 'games/' + this.state.id + '/users/' + this.state.user['id']);
 
         await Axios.get(global.api + 'games/' + this.state.id + '/users/' + this.state.user['id'])
             .then(data => {
@@ -370,10 +361,17 @@ class Game extends Component {
             .then(data => {
                 console.log(data["data"]);
 
-                this.setState({
+                this.round = data["data"];
+
+                this.fetchPlayerCards(this.round.id).then(e => {
+                    console.log("player cards fetched");
+                    console.log(this.userCards);
+                });
+
+/*                 this.setState({
                     playersDisplay: "none",
                     roundDisplay: "block"
-                });
+                }); */
             })
             .catch(error => {
 
@@ -469,7 +467,7 @@ class Game extends Component {
 
 /*         if(this.state.confirmedPlayers == this.state.players.length) */
             GMActionBtn = <Btn bgColor={"gray"} text={"Start Round"} className={classes.startRound}
-                            onClick={this.startRound} />
+                            onClick={() => {this.startRound() }} />
 /*         else
             GMActionBtn = <Btn bgColor={"gray"} text={"Ping Ppl to Confirm"} className={classes.startRound}
                             onClick={this.pingPpl} /> */

@@ -15,8 +15,12 @@ function Btn(props) {
 
     const btnAction = props.onClick !== undefined ? props.onClick : null;
 
+    let link = props.link !== undefined ? props.link : "";
+
     return(
-            <Button variant="contained" className={clsList} href={props.href} onClick={btnAction}>{btnText}</Button>
+        <Link className={classes.linkStyle} to={link}>
+            <Button variant="contained" className={clsList} onClick={btnAction}>{btnText}</Button>
+        </Link>
     );
 }
 

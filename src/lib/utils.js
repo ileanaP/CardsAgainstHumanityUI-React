@@ -2,9 +2,9 @@ import Noty from 'noty';
 import "../../node_modules/noty/lib/noty.css";  
 import "../../node_modules/noty/lib/themes/sunset.css";
 import Axios from 'axios';
-import createHistory from 'history/createBrowserHistory'
+import { createBrowserHistory } from "history";
 
-const history = createHistory();
+const history = createBrowserHistory();
 
 export function removeDuplicates(arr) {
     arr = arr.filter((thing, index, self) =>
@@ -76,8 +76,13 @@ export async function leaveGame()
         history.go(0);
     })
     .catch(error => {
-        if(error.response !== undefined && error.response.status == 403)
-            notif("You cannot leave the game without ending it");
+        if(error.response !== undefined)
+        {
+            if(error.response.status == 403)
+                notif("You cannot leave the game without ending it");
+            if(error.response.status == 404)
+                notif("Data not found");
+        }
         console.log(error);
-    });;
+    });
 }

@@ -249,6 +249,9 @@ export const styles = {
     confirmedClass: {
         fontWeight: "bold",
         color: "green"
+    },
+    linkStyle: {
+        textDecoration: "none"
     }
 /*     myCustomContainer: {
         width: "500px"
