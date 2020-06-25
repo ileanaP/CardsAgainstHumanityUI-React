@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from '../../lib/styles.js';
 import Box from '@material-ui/core/Box';
-import NotifMsg from '../addons/NotifMsg';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -12,6 +11,8 @@ import PaperWhite from '../addons/PaperWhite';
 import Favorite from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Axios from 'axios';
+import { notif } from '../../lib/utils';
+import Btn from '../addons/Btn';
 
 class NewGame extends Component {
 
@@ -19,52 +20,92 @@ class NewGame extends Component {
         super(props);
 
         this.state = {
-            name: ""
+            cardsets: []
         }
 
+        this.name = "";
+        this.password = "";
+        this.user = JSON.parse(localStorage.getItem('userData'));
+        this.spacesNotif = false;
+
+        this.cardsetsToSend = []
     }
 
     componentDidMount() {
-
+        this.getCardsets();
     }
 
-    onChange(e) {
-        this.setState({[e.target.name]: e.target.value});
+    onChange = (e) => {
+
+        if(e.target.name == "password" && e.target.value[e.target.value.length -1] == " ")
+        {
+            if(!this.spacesNotif)
+            {
+                notif("No spaces are allowed");
+                this.spacesNotif = " ";
+            }
+            e.target.value = e.target.value.slice(0, e.target.value.length -1);
+        }
+        
+        this[e.target.name] = e.target.value;
     }
 
     getCardsets = async () => {
         await Axios.get(global.api + 'cardsets')
         .then(data => {
-            console.log(data["data"]);
+            let cardsets = data["data"];
+
+            this.cardsetsToSend = cardsets.map((stuff) => {
+                return stuff.id;
+            })
+
+            this.setState({
+                cardsets: data["data"]
+            });
+
         })
         .catch(error => {
-
+            console.log(error);
         })
     }
 
-    cardsetList = () => {
+    startGame = async () => {
 
-        this.getCardsets().then()
-        return(
-            <div style={{overflow:"scroll", height:"200px", width: "350px", margin: "0 auto" }}>
-                <FormControlLabel
-                    control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} name="checkedH" />}
-                    label="Custom icon"
-                />
-                <FormControlLabel
-                    control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} name="checkedH" />}
-                    label="Custom icon"
-                />
-                <FormControlLabel
-                    control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} name="checkedH" />}
-                    label="Custom icon"
-                />
-                <FormControlLabel
-                    control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} name="checkedH" />}
-                    label="Custom icon"
-                />
-            </div>
-        );
+        if(this.name == "" || this.password == "" || this.state.cardsets.length < 10)
+            notif("You did not fill all required stuff");
+        else
+        {
+            let cardsets = this.state.cardsets.map(e => {return e.id;})
+            cardsets = JSON.stringify(cardsets);
+
+            const data = {
+                creator_id: this.user.id,
+                name: this.name,
+                password: this.password,
+                cardsets: cardsets
+            }
+
+            console.log(data);
+
+            await Axios.post(global.api + 'games', data)
+                .then(data => {
+                    console.log(data["data"]);
+                })
+                .catch(err => {
+        
+                });
+        }
+    }
+
+    toggleCardset = (cardset) => {
+        cardset = Number(cardset);
+
+        if(this.cardsetsToSend.includes(cardset))
+            this.cardsetsToSend = this.cardsetsToSend.filter(x => x != cardset)
+        else
+            this.cardsetsToSend.push(cardset);
+
+        console.log(this.cardsetsToSend);
     }
 
     render() {
@@ -83,14 +124,31 @@ class NewGame extends Component {
                             <p className={classes.fancyTitle}>New Game</p>
                         </Grid>
                         <Grid item>
-                            <NotifMsg type={'warning'} text={warningText} visibility={warningClass}/>
-                        </Grid>
-                        <Grid item>
-                        <TextField id="standard-basic" label="Name" onChange={this.onChange}
+                        <TextField id="standard-basic" label="Name" onChange={(e) => {this.onChange(e)}}
                                 className={classes.formItem} name="name" />
                         </Grid>
                         <Grid item>
-                            {this.cardsetList()}
+                            <TextField id="standard-basic" label="Password" onChange={(e) => {this.onChange(e)}}
+                                    className={classes.formItem} name="password" />
+                        </Grid>
+                        <Grid item>
+                            <div className={classes.boxCardset}>
+                                {
+                                this.state.cardsets.map((cardset) => {
+                                    return(
+                                        <FormControlLabel
+                                            control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} 
+                                                            defaultChecked={true} onChange={() => {this.toggleCardset(cardset.id)}}/>}
+                                            label={cardset.name}
+                                        />
+                                    )
+                                })
+                                }
+                            </div>
+                        </Grid>
+                        <Grid item>
+                            <Btn bgColor={"darkred"} text={"Start Game"}
+                                    onClick={() => {this.startGame()}}  />
                         </Grid>
                     </Grid>
 

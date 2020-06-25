@@ -252,6 +252,18 @@ export const styles = {
     },
     linkStyle: {
         textDecoration: "none"
+    },
+    boxCardset: {
+        overflow:"scroll", 
+        height:"150px", 
+        width: "300px", 
+        margin: "0 auto", 
+        paddingLeft:"30px", 
+        paddingRight:"30px", 
+        marginTop:"30px", 
+        overflowX: "hidden", 
+        overflowY: "auto", 
+        background: "whitesmoke"
     }
 /*     myCustomContainer: {
         width: "500px"

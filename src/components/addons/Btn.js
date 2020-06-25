@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from '../../lib/styles.js';
+import { useLocation } from 'react-router-dom'
+
 
 function Btn(props) {
 
@@ -15,7 +17,16 @@ function Btn(props) {
 
     const btnAction = props.onClick !== undefined ? props.onClick : null;
 
-    let link = props.link !== undefined ? props.link : "";
+    let link;
+    let location = useLocation();
+    
+    if(props.link !== undefined)
+        link = props.link;
+    else
+    {
+        
+        link = location.pathname
+    }
 
     return(
         <Link className={classes.linkStyle} to={link}>
