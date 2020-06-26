@@ -19,7 +19,7 @@ import { styles } from '../../../lib/styles.js';
 import Burger from '../../addons/Burger';
 import { useParams, Redirect } from "react-router-dom";
 import Pusher from 'pusher-js';
-import {removeDuplicates, notif, leaveGame, removePlayer} from '../../../lib/utils';
+import {removeDuplicates, notif, leaveGame, removePlayer, fromStorage, toStorage} from '../../../lib/utils';
 import Tenor from '../../../lib/img/tenor.gif';
 
 class Game extends Component {
@@ -29,7 +29,7 @@ class Game extends Component {
 
         let id = this.props.match.params.id;
         let idNr = !isNaN(id) ? Number(id) : 0;
-        let user = JSON.parse(localStorage.getItem('userData'));
+        let user = fromStorage('userData');
         user.creator = undefined;
         user.confirmed = false;
 
@@ -165,6 +165,9 @@ class Game extends Component {
 
             if(player.id == this.state.user.id)
             {
+                this.state.user.game = null;
+                toStorage('userData', JSON.stringify(this.state.user));
+
                 notif({msg: "You were brutally kicked out", type: "pink"});
                 setTimeout(() => {
                     this.setState({redirect: "/"});
@@ -181,13 +184,11 @@ class Game extends Component {
                     You shall be returned to the games hub.");
             }
 
-            let user = this.state.user;
-            user['game'] = null;
-            localStorage.setItem('userData', JSON.stringify(user));
+            this.state.user.game = null;
+            toStorage('userData', JSON.stringify(this.state.user));
 
             setTimeout(() => {
-                console.log("GameEnded redirect");
-                //this.setState({redirect: "/"});
+                this.setState({redirect: "/"});
             }, 5000);
         });
 
@@ -247,7 +248,7 @@ class Game extends Component {
 
     async canUserAccessGame()
     {
-        if(!JSON.parse(localStorage.getItem('loggedIn')))
+        if(!fromStorage('loggedIn'))
         {
             this.allowedToPlay = false;
         }
@@ -258,7 +259,7 @@ class Game extends Component {
                 if(this.state.user['game'] != this.state.id)
                 {
                     user['game'] = this.state.id;
-                    localStorage.setItem('userData', JSON.stringify(user));
+                    toStorage('userData', JSON.stringify(user));
                 }
                 
                 user['confirmed'] = data['data']['confirmed'];
@@ -276,10 +277,9 @@ class Game extends Component {
                     }
                     if(error.response.status == 404) 
                     {
-                        console.log("404 canUserAccessGame redirect")
-                        /* this.setState({
+                        this.setState({
                             redirect: "/404"
-                        }); */
+                        });
                     }
                 }
                 else

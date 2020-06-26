@@ -19,7 +19,7 @@ import FourOhFour from "./components/Pages/FourOhFour";
 import Game from './components/Pages/Game/Game';
 import WaitRedirect from './components/addons/WaitRedirect';
 import Axios from 'axios';
-import {notif} from './lib/utils';
+import {fromStorage, toStorage, notif} from './lib/utils';
 
 import './App.css';
 import './lib/globals.js';
@@ -30,7 +30,7 @@ class App extends Component {
     
     this.state = {
       sideDrawerOpen: false,
-      isLoggedIn: JSON.parse(localStorage.getItem('loggedIn')),
+      isLoggedIn: fromStorage('loggedIn'),
       redirect: ''
     };
   }
@@ -62,7 +62,7 @@ class App extends Component {
   };
 
   toggleLoginState = () => {    
-    let isLoggedIn = JSON.parse(localStorage.getItem('loggedIn'));
+    let isLoggedIn = fromStorage('loggedIn');
     this.setState({isLoggedIn: isLoggedIn});
   }
 

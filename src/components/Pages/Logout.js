@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 //import Cookies from 'universal-cookie';
+import { fromStorage, toStorage } from '../../lib/utils';
 import WaitRedirect from '../addons/WaitRedirect';
 
 class Logout extends Component 
 {
     componentDidMount() {
-        if(JSON.parse(localStorage.getItem('loggedIn')))
+        if(fromStorage('loggedIn'))
         {
             localStorage.removeItem('userData');
-            localStorage.setItem('loggedIn', 'false');
+            toStorage('loggedIn', 'false');
 
 /*             const cookies = new Cookies();
             cookies.remove('username');

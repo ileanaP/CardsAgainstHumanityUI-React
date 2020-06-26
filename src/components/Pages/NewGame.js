@@ -5,13 +5,15 @@ import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Link from '@material-ui/core/Link';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import PaperWhite from '../addons/PaperWhite';
+import WaitRedirect from '../addons/WaitRedirect';
 import Favorite from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import Axios from 'axios';
-import { notif } from '../../lib/utils';
+import { notif, fromStorage, toStorage } from '../../lib/utils';
 import Btn from '../addons/Btn';
 
 class NewGame extends Component {
@@ -20,18 +22,27 @@ class NewGame extends Component {
         super(props);
 
         this.state = {
-            cardsets: []
+            cardsets: [],
+            default: true,
+            toggleSelect: "(deselect all)"
         }
+
+        this.user = fromStorage('userData');
 
         this.name = "";
         this.password = "";
-        this.user = JSON.parse(localStorage.getItem('userData'));
         this.spacesNotif = false;
 
         this.cardsetsToSend = []
     }
 
     componentDidMount() {
+        
+        if(this.user.game != null)
+        {
+            this.setState({redirect: "/"});
+        }
+
         this.getCardsets();
     }
 
@@ -55,12 +66,14 @@ class NewGame extends Component {
         .then(data => {
             let cardsets = data["data"];
 
+            cardsets = cardsets.map(e => {e.checked = true; return e;});
+
             this.cardsetsToSend = cardsets.map((stuff) => {
                 return stuff.id;
             })
 
             this.setState({
-                cardsets: data["data"]
+                cardsets: cardsets
             });
 
         })
@@ -89,16 +102,43 @@ class NewGame extends Component {
 
             await Axios.post(global.api + 'games', data)
                 .then(data => {
-                    console.log(data["data"]);
+                    let game = data["data"];
+
+                    this.user.game = game.id;
+                    toStorage('userData', JSON.stringify(this.user));
+
+                    this.setState({
+                        redirect: "/game/" + game.id
+                    });
                 })
                 .catch(err => {
-        
+                    if(err.response !== undefined)
+                    { 
+                        if(err.response.status == 403)
+                            notif(err.response.data.error);
+                        
+                        if(err.response.status == 422)
+                            notif("Validation failed");
+
+                    }
+                    else
+                    {
+                        console.log(err);
+                    }
                 });
         }
     }
 
-    toggleCardset = (cardset) => {
+    toggleCardset = (e, cardset) => {
+
         cardset = Number(cardset);
+
+        console.log(e.target.checked);
+
+        let cardsets = this.state.cardsets.map(es => {
+            es.checked = es.id == cardset ? e.target.checked : es.checked;
+            return es;
+        });
 
         if(this.cardsetsToSend.includes(cardset))
             this.cardsetsToSend = this.cardsetsToSend.filter(x => x != cardset)
@@ -106,9 +146,32 @@ class NewGame extends Component {
             this.cardsetsToSend.push(cardset);
 
         console.log(this.cardsetsToSend);
+
+        this.setState({
+            cardsets: cardsets
+        });
+    }
+
+    toggleSelect = () => {
+        let defaultt = !this.state.default;
+
+        let cardsets = this.state.cardsets.map(e => {
+            e.checked = defaultt;
+            return e;
+        });
+
+        this.setState({
+            default: defaultt,
+            cardsets: cardsets,
+            toggleSelect: defaultt ? "(deselect all)" : "(select all)"
+        });
     }
 
     render() {
+
+        if (this.state.redirect) {
+            return  <WaitRedirect link={this.state.redirect} ms={0} />
+        }
 
         let warningText = ''
         let warningClass = ''
@@ -133,12 +196,16 @@ class NewGame extends Component {
                         </Grid>
                         <Grid item>
                             <div className={classes.boxCardset}>
+                                <div style={{float:"right", marginTop:"10px"}}>
+                                    <Link className={classes.toggleSelect} onClick={() => {this.toggleSelect()}}>{this.state.toggleSelect}</Link>
+                                </div>
+                                <div style={{clear:"both"}}></div>
                                 {
                                 this.state.cardsets.map((cardset) => {
                                     return(
                                         <FormControlLabel
                                             control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} 
-                                                            defaultChecked={true} onChange={() => {this.toggleCardset(cardset.id)}}/>}
+                                                            defaultChecked={true} checked={cardset.checked} onChange={(e) => {this.toggleCardset(e, cardset.id)}}/>}
                                             label={cardset.name}
                                         />
                                     )

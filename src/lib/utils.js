@@ -64,14 +64,14 @@ export async function removePlayer(playerid, gameid)
 
 export async function leaveGame()
 {
-    let user = JSON.parse(localStorage.getItem('userData'));
+    let user = fromStorage('userData');
 
     if(user == null || user['game'] == null)
         return;
 
     removePlayer(user.id, user['game']).then(e => {
         user['game'] = null;
-        localStorage.setItem('userData', JSON.stringify(user));
+        toStorage('userData', JSON.stringify(user));
 
         history.go(0);
     })
@@ -85,4 +85,14 @@ export async function leaveGame()
         }
         console.log(error);
     });
+}
+
+export function fromStorage(stuff)
+{
+    return JSON.parse(localStorage.getItem(stuff));
+}
+
+export function toStorage(stuff, data)
+{
+    localStorage.setItem(stuff, data);
 }

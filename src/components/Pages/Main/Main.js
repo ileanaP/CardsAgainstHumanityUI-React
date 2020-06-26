@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Btn from '../../addons/Btn';
 import { styles } from '../../../lib/styles.js';
-import {leaveGame} from '../../../lib/utils';
+import { leaveGame, fromStorage } from '../../../lib/utils';
 
 class Main extends Component {
 
@@ -16,7 +16,7 @@ class Main extends Component {
         console.log(localStorage.getItem('loggedIn'));
         console.log(localStorage.getItem('userData'));
 
-        let user = JSON.parse(localStorage.getItem('userData'));
+        let user = fromStorage('userData');
 
         let loggedIn = user != null ? true : false;
         let game = loggedIn ? user['game'] : null;

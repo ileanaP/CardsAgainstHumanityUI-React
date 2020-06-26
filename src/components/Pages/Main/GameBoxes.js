@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Btn from '../../addons/Btn';
 import { withStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { fromStorage } from '../../../lib/utils';
 import { styles } from '../../../lib/styles.js';
 
 class GameBoxes extends Component {
@@ -26,7 +27,10 @@ class GameBoxes extends Component {
 
     async componentDidMount() {
         await Axios.get(global.api + 'games')
-            .then(data => { 
+            .then(data => {
+                let boxes = data['data'];
+                boxes.sort((a,b) => (a.id < b.id) ? 1 : ((b.id < a.id) ? -1 : 0));
+
                 this.setState({boxes: data['data']});
             })
             .catch(error => {
@@ -52,7 +56,7 @@ class GameBoxes extends Component {
         return(
             <Fragment>
                 {this.state.boxes.map((box, idx) => {
-                    let btnHref = JSON.parse(localStorage.getItem('loggedIn')) ? "/game/" + box.id : "";
+                    let btnHref = fromStorage('loggedIn') ? "/game/" + box.id : "";
                     return (
                         <Box clone pt={2} pr={1} pb={1} pl={2} width={300} height={0}
                                     className={classes.balanceBox}>

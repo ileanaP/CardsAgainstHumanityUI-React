@@ -264,6 +264,12 @@ export const styles = {
         overflowX: "hidden", 
         overflowY: "auto", 
         background: "whitesmoke"
+    },
+    toggleSelect: {
+        '&:hover': {
+            cursor: "pointer",
+            textDecoration:"none"
+        }
     }
 /*     myCustomContainer: {
         width: "500px"

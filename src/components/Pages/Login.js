@@ -9,6 +9,7 @@ import { Redirect } from 'react-router-dom';
 import Btn from '../addons/Btn';
 import NotifMsg from '../addons/NotifMsg';
 import { styles } from '../../lib/styles.js';
+import { fromStorage, toStorage } from '../../lib/utils';
 import Axios from 'axios';
 //import Cookies from 'universal-cookie';
 import WaitRedirect from '../addons/WaitRedirect';
@@ -33,7 +34,7 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        if(JSON.parse(localStorage.getItem('loggedIn')))
+        if(fromStorage('loggedIn'))
             this.setState({redirect: '/'});
     }
 
@@ -55,8 +56,8 @@ class Login extends Component {
                     game: data['in_game']
                 };
                 
-                localStorage.setItem('userData', JSON.stringify(localData));
-                localStorage.setItem('loggedIn', 'true');
+                toStorage('userData', JSON.stringify(localData));
+                toStorage('loggedIn', 'true');
 
                 /* const cookies = new Cookies();
                 cookies.set('username', data['name'], { path: '/' });

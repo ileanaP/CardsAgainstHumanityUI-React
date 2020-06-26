@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from "react-router-dom";
+import { fromStorage } from '../../lib/utils';
 
 function NavLinks(props) {
 
     let links = [{name: 'Home', href: '/'}];
     
-    if(!JSON.parse(localStorage.getItem('loggedIn'))) {
+    if(!fromStorage('loggedIn')) {
         links.push({name: 'Login', href: '/login'});
     }
     else {

@@ -11,6 +11,7 @@ import { Redirect } from 'react-router-dom';
 import { styles } from '../../lib/styles.js';
 import Axios from 'axios';
 //import Cookies from 'universal-cookie';
+import { toStorage } from '../../lib/utils';
 import { render } from '@testing-library/react';
 
 
@@ -40,7 +41,7 @@ class Register extends Component {
         await Axios.post(global.api + 'register', data)
             .then(data => { 
                 data = data['data'];
-                localStorage.setItem('userData', data);
+                toStorage('userData', data);
 
                 /* const cookies = new Cookies();
                 cookies.set('username', data['name'], { path: '/' });
