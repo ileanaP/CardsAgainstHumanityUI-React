@@ -9,6 +9,7 @@ import Avatar from '@material-ui/core/Avatar';
 import VideogameAsset from '@material-ui/icons/VideogameAsset';
 import Typography from '@material-ui/core/Typography';
 import Btn from '../../addons/Btn';
+import PaperWhite from '../../addons/PaperWhite';
 import CardsInfo from './CardsInfo';
 import PlayerInfo from './PlayerInfo';
 import Card from './Card';
@@ -48,12 +49,15 @@ class Game extends Component {
             loadingDisplay: "block",
             game: [],
             stateStuff: "null ~~ " + user.id,
-            confirmedPlayers: 0
+            confirmedPlayers: 0,
+            currBlackCard: null,
+            blackCardsCounter: -1,
+            currWhiteCards: [],
+            whiteCardsCounter: -1,
         }
 
         this.round = null;
-        this.cards = null;
-        this.userCards = null;
+        this.cards = {white: null, black: null};
         this.cicle = 0;
         this.allowedToPlay = true;
     }
@@ -214,9 +218,49 @@ class Game extends Component {
                 players: players,
                 stateStuff: "something",
                 user: userS,
-                confirmedPlayers: this.state.confirmedPlayers++
+                confirmedPlayers: ++this.state.confirmedPlayers
             })
+        });
 
+        channel.bind("App\\Events\\PingPlayersToConfirm", data => {
+            console.log("PingPlayersToConfirm::: ", data);
+
+            if(!this.state.user.confirmed)
+                notif("Don't forget to confirm your presence");
+        });
+
+        channel.bind("App\\Events\\StartRound", data => {
+            console.log("StartRound::: ", data);
+
+            let blackCards = data['round']['card_data'];
+
+            this.fetchCardData(blackCards).then(data => {
+
+                this.cards['black'] = data
+
+                this.setState({
+                    currBlackCard: this.cards['black'][0],
+                    blackCardsCounter: 0,
+                    playersDisplay: "none",
+                    roundDisplay: "block"
+                });
+            });
+        });
+
+        channel.bind("App\\Events\\RoundCards", data => {
+            console.log("RoundCards::: ", data);
+
+            let playerCards = JSON.stringify(data['cards'][this.state.user.id]);
+
+            this.fetchCardData(playerCards).then(data => {
+            
+                this.cards['white'] = data
+
+                this.setState({
+                    currWhiteCards: this.cards['white'].slice(0,9),
+                    whiteCardsCounter: 9
+                });
+            })
         });
     }
 
@@ -332,10 +376,11 @@ class Game extends Component {
             });
     }
 
-    async fetchCardData(cards){
-        await Axios.get(global.api + 'cards/' + cards)
+    fetchCardData(cards){
+
+        return Axios.get(global.api + 'cards/' + cards)
             .then(data => {
-                this.cards = data['data'];
+                return data['data'];
             })
             .catch(error => {
                 console.log(error);
@@ -363,10 +408,10 @@ class Game extends Component {
 
                 this.round = data["data"];
 
-                this.fetchPlayerCards(this.round.id).then(e => {
+/*                 this.fetchPlayerCards(this.round.id).then(e => {
                     console.log("player cards fetched");
                     console.log(this.userCards);
-                });
+                }); */
 
 /*                 this.setState({
                     playersDisplay: "none",
@@ -428,8 +473,15 @@ class Game extends Component {
         console.log("yep this was literally called :/ ");
     }
 
-    pingPpl = () => {
-        notif({msg: "Ppl, confirm", type: "error"});
+    pingPlayersToConfirm = async () => {
+        
+        await Axios.post(global.api + 'games/' + this.state.id + '/pingPlayersToConfirm')
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.log(error);
+            })
     }
 
     render() {
@@ -465,12 +517,54 @@ class Game extends Component {
 
         let GMActionBtn;
 
-/*         if(this.state.confirmedPlayers == this.state.players.length) */
-            GMActionBtn = <Btn bgColor={"gray"} text={"Start Round"} className={classes.startRound}
-                            onClick={() => {this.startRound() }} />
-/*         else
-            GMActionBtn = <Btn bgColor={"gray"} text={"Ping Ppl to Confirm"} className={classes.startRound}
-                            onClick={this.pingPpl} /> */
+        if(this.state.user.creator)
+            if(this.state.confirmedPlayers == this.state.players.length)
+            {
+                GMActionBtn = <Btn bgColor={"gray"} text={"Start Round"} className={classes.startRound}
+                                onClick={() => {this.startRound() }} />
+            }
+            else
+            {
+                GMActionBtn = <Btn bgColor={"gray"} text={"Ping Ppl to Confirm"} className={classes.startRound}
+                                onClick={() => {this.pingPlayersToConfirm()}} />
+            }
+
+        let blackCard;
+
+        if(this.state.currBlackCard != null)
+        {
+            blackCard = <Card text={this.state.currBlackCard.text} type="black" />;
+        }
+
+        let paperWhiteContent = () => {
+            return(
+            <div>
+                <Grid item style={{height:"80%"}}>
+                    <div style={{display: "inlineBlock", height: "190px"}}>
+                        <p className={classes.fancyTitle}>Players</p>
+                        {this.state.players.map((player) => {
+        
+                            let playerLine = this.constructPlayerLine(player);
+                            
+                            let playerClass = player.creator ? classes.creatorClass 
+                                                            : (player.confirmed ? classes.confirmedClass : '');
+
+                            return(
+                                <li className={playerClass}
+                                        style={{listStyleType: "none"}}>
+                                            {playerLine}
+                                </li>
+                            );
+
+                        })}
+                    </div>
+                </Grid>
+                <Grid item style={{height:"20%"}}>
+                    {GMActionBtn}
+                </Grid>
+            </div>
+            );
+        }
 
         return (
             <Grid container>
@@ -480,39 +574,8 @@ class Game extends Component {
                 </div>
                 <Grid item style={{width:"100%"}}>
                     <div className={"players"} style={{display: this.state.playersDisplay}}>
-                        <Box className={classes.centeredBox}>
-                            <Box clone pt={2} pr={1} pb={1} pl={2} width={400} height={500}>
-                                <Paper elevation={3} style={{textAlign: "center"}}>
-                                    <Grid container direction="column" style={{height:"100%"}}>
-                                        <Grid item style={{height:"80%"}}>
-                                            <div style={{display: "inlineBlock", height: "190px"}}>
-                                                <p className={classes.fancyTitle}>Players</p>
-                                                {this.state.players.map((player) => {
-            
-
-
-            let playerLine = this.constructPlayerLine(player);
-
-            let playerClass = player.creator ? classes.creatorClass 
-                                             : (player.confirmed ? classes.confirmedClass : '');
-
-            return(
-                <li className={playerClass}
-                        style={{listStyleType: "none"}}>
-                            {playerLine}
-                </li>
-            );
-
-                                                })}
-                                            </div>
-                                        </Grid>
-                                        <Grid item style={{height:"20%"}}>
-                                            {GMActionBtn}
-                                        </Grid>
-                                    </Grid>
-                                </Paper>
-                            </Box>
-                        </Box>
+                        
+                    <PaperWhite content={paperWhiteContent}/>
                     </div>
                     <div className={"round"} style={{display: this.state.roundDisplay}}>
                         <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
@@ -522,7 +585,7 @@ class Game extends Component {
                             <Grid item xs={3}>
                                 <Grid container>
                                     <Grid item>
-                                        <Card text={"ala balla"} type="black" />
+                                        {blackCard}
                                     </Grid>
                                 </Grid>
                             </Grid>

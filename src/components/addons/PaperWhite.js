@@ -13,7 +13,7 @@ function PaperWhite(props) {
     return(
         <Box className={classes.centeredBox}>
             <Box clone pt={2} pr={1} pb={1} pl={2} width={400} height={500} >
-                <Paper elevation={3}>
+                <Paper elevation={3}  style={{textAlign: "center"}}>
                     <Grid container direction="column" style={{height:"100%"}}>
                     {props.content()}
                     </Grid>
