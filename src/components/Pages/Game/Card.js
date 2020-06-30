@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { styles } from '../../../lib/styles.js';
+import { notif } from '../../../lib/utils';
 
 
 class  Card extends Component {
@@ -26,8 +27,9 @@ class  Card extends Component {
         }
 
         this.state = {
+            text: this.props.text,
             fontSize: fontSize,
-            selected: false
+            selected: this.props.selected
         }
     }
 
@@ -45,9 +47,9 @@ class  Card extends Component {
         let click;
 
         if(typeof this.props.onClick == 'function')
-            click = (e) => {this.props.onClick(e)}
+            click = () => { this.props.onClick()}
         else
-            click = () => {};
+            click = null;
 
         let classs = classes[this.props.type + "Card"] + ' '+ this.props.cardClass;
 
@@ -59,10 +61,10 @@ class  Card extends Component {
         return (
             <Box clone pt={2} pr={1} pb={1} pl={2} 
                 className={classs}
-                onClick={() => {this.props.onClick(this.props.id)}}>
+                onClick={click}>
                 <Paper elevation={3}>
                     <Typography style={{fontSize: this.state.fontSize}}>
-                        {this.props.text}
+                        {this.state.text}
                     </Typography>
                 </Paper>
                 

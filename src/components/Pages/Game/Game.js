@@ -41,7 +41,6 @@ class Game extends Component {
             cardsInfoOpen: false,
             cards: [],
             user: user,
-            userHand: [],
             activeCardset: 0,
             players: [],
             playersDisplay: "none",
@@ -54,6 +53,7 @@ class Game extends Component {
             blackCardsCounter: -1,
             currWhiteCards: [],
             whiteCardsCounter: -1,
+            selectedWhiteCard: -1
         }
 
         this.round = null;
@@ -115,6 +115,29 @@ class Game extends Component {
                         players: players,
                         playersDisplay: "block",
                         loadingDisplay: "none"
+                    });
+
+                    this.setState({
+                        currBlackCard: {id: 116, 
+                                        text: "I know when that hotline bling, that can only mean one thing: ____.", 
+                                        pick: 1},
+                        blackCardsCounter: 0,
+                        playersDisplay: "none",
+                        roundDisplay: "block"
+                    });
+            
+                    this.setState({
+                        currWhiteCards: [{id: 2280, text: "An immediately regrettable $9 hot dog from the Boston Convention Center.", type: "white"},
+                                            {id: 2227, text: "The Genophage.", type: "white"},
+                                            {id: 853, text: "An older woman who knows her way around the penis.", type: "white"},
+                                            {id: 1851, text: "Antidepressants.", type: "white"},
+                                            {id: 2411, text: "A big brain full of facts and sadness.", type: "white"},
+                                            {id: 1429, text: "Being a hideous beast that no one could love.", type: "white"},
+                                            {id: 1858, text: "Working so hard to have muscles and then having them.", type: "white"},
+                                            {id: 703, text: "Running out of semen.", type: "white"},
+                                            {id: 1148, text: "Pikies.", type: "white"},
+                                            {id: 1708, text: "Lots and lots of abortions.", type: "white"}],
+                        whiteCardsCounter: 10
                     });
                 });
 
@@ -230,13 +253,25 @@ class Game extends Component {
         });
 
         channel.bind("App\\Events\\StartRound", data => {
-            console.log("StartRound::: ", data);
+/*            console.log("StartRound::: ", data);
 
-            let blackCards = data['round']['card_data'];
+             let blackCards = data['round']['card_data'];
 
             this.fetchCardData(blackCards).then(data => {
+                blackCards = JSON.parse(blackCards);
 
-                this.cards['black'] = data
+                this.cards['black'] = blackCards.map(x => {
+                    let res = data.filter(xx => (xx.id == x))
+                    res = {
+                        id: res[0].id,
+                        text: res[0].text,
+                        pick: res[0].pick
+                    }
+                    return res;
+                });
+
+                console.log("~~~~~~ <<<<<<<<<< ~~~~~~~");
+                console.log(this.cards['black'][0]);
 
                 this.setState({
                     currBlackCard: this.cards['black'][0],
@@ -244,23 +279,36 @@ class Game extends Component {
                     playersDisplay: "none",
                     roundDisplay: "block"
                 });
-            });
+            }); */
         });
 
         channel.bind("App\\Events\\RoundCards", data => {
-            console.log("RoundCards::: ", data);
+            /* console.log("RoundCards::: ", data);
 
             let playerCards = JSON.stringify(data['cards'][this.state.user.id]);
 
             this.fetchCardData(playerCards).then(data => {
-            
-                this.cards['white'] = data
+
+                playerCards = JSON.parse(playerCards);
+
+                this.cards['white'] = playerCards.map(x => {
+                    let res = data.filter(xx => (xx.id == x))
+                    res = {
+                        id: res[0].id,
+                        text: res[0].text,
+                        type: "white"
+                    }
+                    return res;
+                });
+
+                console.log("~~~~~~ >>>>>>>>>>>>>>>>>>>> ~~~~~~~");
+                console.log(this.cards['white'].slice(0,10));
 
                 this.setState({
-                    currWhiteCards: this.cards['white'].slice(0,9),
-                    whiteCardsCounter: 9
+                    currWhiteCards: this.cards['white'].slice(0,10),
+                    whiteCardsCounter: 10
                 });
-            })
+            }) */
         });
     }
 
@@ -292,7 +340,17 @@ class Game extends Component {
 
     async canUserAccessGame()
     {
-        if(!fromStorage('loggedIn'))
+        let user = this.state.user
+        user['game'] = this.state.id;
+        toStorage('userData', JSON.stringify(user));
+
+        user['confirmed'] = 1;
+
+        this.setState({
+            user: user
+        });
+
+/*         if(!fromStorage('loggedIn'))
         {
             this.allowedToPlay = false;
         }
@@ -330,11 +388,11 @@ class Game extends Component {
                 {
                     console.log(error);
                 }
-            });
+            }); */
     }
 
     async fetchPlayers(){
-        await Axios.get(global.api + 'games/' + this.state.id + '/users')
+/*         await Axios.get(global.api + 'games/' + this.state.id + '/users')
             .then(data => {
 
                 let players = data['data'].map((elem) => {
@@ -353,6 +411,14 @@ class Game extends Component {
 
                 let user = this.state.user;
 
+                console.log(" *** players *** ");
+                console.log(players);
+                console.log(" *** players *** ");
+                console.log(user);
+                console.log(" *** players *** ");
+                console.log(confirmedPlayers);
+                console.log(" *** players *** ");
+                
                 this.setState({
                     players: players,
                     user: user,
@@ -362,18 +428,44 @@ class Game extends Component {
             .catch(error => {
                 console.log("fetchPlayers error");
                 //this.setState({redirect: '/'});
+            }); */
+
+            this.setState({
+                players: [{id:578, name:"Spencer Friesen", creator:true, confirmed: 1},
+                            {id:2, name:"Arne Wilderman", creator:false, confirmed: 1},
+                            {id:768, name:"Asha Gutmann", creator:false, confirmed: 1},
+                            {id:967, name:"Leonie Oberbrunner Jr.", creator:false, confirmed: 1}],
+                user: this.state.user,
+                confirmedPlayers: 4
             });
     }
 
     async fetchGameData() {
-        await Axios.get(global.api + 'games/' + this.state.id)
+
+        this.setState({
+            game: {cardsets: "[2,103,134,166,191,235,271,342,398,406,414,417,421,430,437,447,454,459,466,469,476,478,482,485,487,494,499,505,510,517,521,530,533,541,552,560,566,568,572,2131,2152,2374]",
+                        created_at: "2020-06-26T11:07:17.000000Z",
+                        creator_id: 578,
+                        deleted_at: null,
+                        id: 37,
+                        name: "fsfsdfsfsd",
+                        password: "$2y$10$Sfzj/wMmNlM/UrW7ra9ByeI5MD8dJ4gy.GzrI78FgGJz4NgdlB.Bq",
+                        updated_at: "2020-06-26T11:07:17.000000Z",
+                        winner_id: null
+                        }
+        });
+
+/*         await Axios.get(global.api + 'games/' + this.state.id)
             .then(data => {
+                console.log("__________________________________");
+                console.log(data['data']);
+
                 this.setState({game: data['data'] });
             })
             .catch(error => {
                 console.log("fetchGameData error");
                 //this.setState({redirect: '/'});
-            });
+            }); */
     }
 
     fetchCardData(cards){
@@ -396,6 +488,8 @@ class Game extends Component {
     }
 
     updateGame = (id) => {
+        console.log("updateGame click was clicked");
+        
         this.setState({
             activeCardset: (this.state.activeCardset == id) ? 0 : id
         });
@@ -580,7 +674,7 @@ class Game extends Component {
                     <div className={"round"} style={{display: this.state.roundDisplay}}>
                         <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
                         <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo} 
-                            userHand={this.state.userHand} />
+                            cards={this.state.currWhiteCards} />
                         <Grid container>
                             <Grid item xs={3}>
                                 <Grid container>

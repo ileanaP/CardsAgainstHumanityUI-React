@@ -10,26 +10,24 @@ import { styles } from '../../../lib/styles.js';
 
 class CardSet extends Component {
 
-/*     constructor(props) {
+    constructor(props) {
         super(props);
-    } */
 
-    state = {
-        backgroundColor: 'red',
-        activeCard: 0
+        let cards = this.props.cards.map(card => {
+            card.active = false;
+            return card;
+        })
+
+        this.state = {
+            backgroundColor: 'red',
+            cards: this.props.cards
+        }
     }
 
-    updateCardset = (id) => {
-        if(this.props.cardClass == 'playCard')
-        {
-            this.setState({
-                activeCard: (this.state.activeCard == id) ? 0 : id
-            });
-        }
-        else
-        {
-            console.log('hellow from the insidee');
-        }
+    componentWillReceiveProps(props) {
+        this.setState({
+            cards: this.props.cards
+        });
     }
 
     render()
@@ -37,11 +35,14 @@ class CardSet extends Component {
         const { classes } = this.props;
 
         let click;
+        let cardClick;
 
         if(typeof this.props.onClick == 'function')
-            click = () => {this.props.onClick(this.props.playerId);} 
+            click = () => {this.props.onClick();} 
         else
             click = () => {};
+
+        cardClick = (typeof this.props.cardClick != 'function') ? (x) => {} : this.props.cardClick;
 
         let classs = classes.cardset;
 
@@ -49,13 +50,14 @@ class CardSet extends Component {
             classs += ' ' + classes.selectedCardset + ' muie';
 
         return (
+
             <Box className={classs} 
                 onClick={click}>
-                {(this.props.cards).map( (card) => {
+                {(this.state.cards).map( (card) => {
                     return (
-                        <Card id={card.id} selected={this.state.activeCard == card.id ? true : false} 
+                        <Card id={card.id} selected={card.active} 
                             type={card.type} text={card.text} cardClass={this.props.cardClass}
-                            onClick={this.updateCardset}/>
+                            onClick={() => {cardClick(card.id);}}/>
                     );
                 })}
             </Box>

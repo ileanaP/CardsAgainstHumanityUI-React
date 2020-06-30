@@ -16,7 +16,7 @@ class CardsInfo extends React.Component {
 
         this.state = {
             open: open,
-            cards: []
+            cards: this.props.cards
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -34,9 +34,9 @@ class CardsInfo extends React.Component {
     componentWillReceiveProps(props) {
         this.setState({open: props.open});
 
-        if(JSON.stringify(props.userHand) != JSON.stringify(this.props.userHand))
+        if(JSON.stringify(props.cards) != JSON.stringify(this.props.cards))
         {
-            this.processUserHand(props.userHand);
+            this.setState({cards: props.cards});
         }
     }
 
@@ -49,23 +49,18 @@ class CardsInfo extends React.Component {
             this.props.close();
         }
     }
-
-    processUserHand(userHand){
-        let arr = [];
-        let card;
-
-        userHand.forEach(x => {
-            card = {
-                id: x.id,
-                text: x.text,
-                type: x.type
-            }
-            arr.push(card);
+    
+    cardClick = (id) => {
+        let cards = this.state.cards.map(x => {
+            x.active = x.id == id ? true : false;
+            return x
         });
 
-        this.setState({cards: arr});
+        this.setState({
+            cards: cards
+        });
     }
-    
+
     render() {
         const { classes } = this.props;
 
@@ -86,13 +81,12 @@ class CardsInfo extends React.Component {
                         {text:'An Oedipus complex.', type:'white'},
                         {text:'Scientology.', type:'white'}];
 
-        console.log(this.state.cards);
-
         return (
             <nav className={drawerClasses.join(' ')} ref={this.setWrapperRef}>
                 <CloseIcon onClick={this.props.close}/>
                 <Grid item>
-                    <CardSet cards={this.state.cards} cardClass={'playCard'}/>
+                    <CardSet cards={this.state.cards} cardClass={'playCard'} 
+                        cardClick={this.cardClick}/>
                 </Grid>
             </nav>
         );
