@@ -29,7 +29,8 @@ class  Card extends Component {
         this.state = {
             text: this.props.text,
             fontSize: fontSize,
-            selected: this.props.selected
+            selected: this.props.selected,
+            visibility: this.props.visibility != undefined ? this.props.visibility : "visible"
         }
     }
 
@@ -38,6 +39,9 @@ class  Card extends Component {
         {
             this.setState({selected: props.selected});
         }
+        this.setState({
+            visibility: props.visibility != undefined ? props.visibility : "visible"
+        });
     }
 
     render() {
@@ -61,7 +65,8 @@ class  Card extends Component {
         return (
             <Box clone pt={2} pr={1} pb={1} pl={2} 
                 className={classs}
-                onClick={click}>
+                onClick={click}
+                style={{visibility: this.state.visibility}}>
                 <Paper elevation={3}>
                     <Typography style={{fontSize: this.state.fontSize}}>
                         {this.state.text}

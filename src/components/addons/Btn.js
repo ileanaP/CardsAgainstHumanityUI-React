@@ -28,8 +28,10 @@ function Btn(props) {
         link = location.pathname
     }
 
+    let visibility = props.visibility !== undefined ? props.visibility : "";
+
     return(
-        <Link className={classes.linkStyle} to={link}>
+        <Link className={classes.linkStyle} to={link} style={{visibility: visibility}}>
             <Button variant="contained" className={clsList} onClick={btnAction}>{btnText}</Button>
         </Link>
     );

@@ -120,7 +120,7 @@ class Game extends Component {
                     this.setState({
                         currBlackCard: {id: 116, 
                                         text: "I know when that hotline bling, that can only mean one thing: ____.", 
-                                        pick: 1},
+                                        pick: 2},
                         blackCardsCounter: 0,
                         playersDisplay: "none",
                         roundDisplay: "block"
@@ -578,6 +578,12 @@ class Game extends Component {
             })
     }
 
+    sendCards = (stuff) => {
+        console.log("~~~~~~~~~~~~~~~~~~~");
+        console.log(stuff);
+        console.log("~~~~~~~~~~~~~~~~~~~");
+    }
+
     render() {
         
         if (this.state.redirect) {
@@ -624,10 +630,14 @@ class Game extends Component {
             }
 
         let blackCard;
+        let cardsInfo;
 
-        if(this.state.currBlackCard != null)
+        if(this.state.currBlackCard != null && this.state.currWhiteCards.length != 0)
         {
             blackCard = <Card text={this.state.currBlackCard.text} type="black" />;
+            cardsInfo = <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo} 
+                            cards={this.state.currWhiteCards} sendCards={this.sendCards} 
+                            pick={this.state.currBlackCard.pick}/>
         }
 
         let paperWhiteContent = () => {
@@ -673,8 +683,7 @@ class Game extends Component {
                     </div>
                     <div className={"round"} style={{display: this.state.roundDisplay}}>
                         <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
-                        <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo} 
-                            cards={this.state.currWhiteCards} />
+                        {cardsInfo}
                         <Grid container>
                             <Grid item xs={3}>
                                 <Grid container>

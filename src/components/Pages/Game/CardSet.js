@@ -54,10 +54,26 @@ class CardSet extends Component {
             <Box className={classs} 
                 onClick={click}>
                 {(this.state.cards).map( (card) => {
+                    let visibility = "visible";
+
+
+                    if(card.visible != undefined)
+                    {
+                        visibility = card.visible ? "visible" : "hidden";
+                        if(card.id==1429)
+                        {
+                            console.log(" ++++ ");
+                            console.log(card);
+                            console.log(" ++++ ");
+                            console.log(visibility);
+                            console.log(" ++++ ");
+                        }
+                    } 
+
                     return (
                         <Card id={card.id} selected={card.active} 
                             type={card.type} text={card.text} cardClass={this.props.cardClass}
-                            onClick={() => {cardClick(card.id);}}/>
+                            onClick={() => {cardClick(card.id);}} visibility={visibility}/>
                     );
                 })}
             </Box>

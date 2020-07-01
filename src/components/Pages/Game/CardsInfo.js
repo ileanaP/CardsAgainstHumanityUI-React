@@ -5,6 +5,7 @@ import CardSet from './CardSet';
 import { withStyles } from '@material-ui/core/styles';
 import { styles } from '../../../lib/styles.js';
 import PropTypes from 'prop-types'
+import Btn from '../../addons/Btn';
 
 
 class CardsInfo extends React.Component {
@@ -13,10 +14,19 @@ class CardsInfo extends React.Component {
         super(props);
 
         let open = props.open ? true : false;
+        let pick = parseInt(props.pick);
+
+        let cards = this.props.cards.map(x => {
+            x.visible = true;
+            return x;
+        });
 
         this.state = {
             open: open,
-            cards: this.props.cards
+            cards: this.props.cards,
+            cardClicked: null,
+            pick: pick,
+            cardsToSend: []
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -32,7 +42,10 @@ class CardsInfo extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        this.setState({open: props.open});
+        this.setState({
+            open: props.open,
+            pick: parseInt(props.pick)
+        });
 
         if(JSON.stringify(props.cards) != JSON.stringify(this.props.cards))
         {
@@ -52,12 +65,40 @@ class CardsInfo extends React.Component {
     
     cardClick = (id) => {
         let cards = this.state.cards.map(x => {
-            x.active = x.id == id ? true : false;
+            x.active = x.id == id && !x.active ? true : false;
             return x
         });
 
+        let cardClicked = cards.filter(x => x.active);
+
         this.setState({
-            cards: cards
+            cards: cards,
+            cardClicked: cardClicked.length != 0 ? cardClicked[0] : null
+        });
+    }
+
+    sendCard = (id) => {
+        let cards = this.state.cards;
+        let cardClicked = cards.filter(x => x.active);
+        let cardsToSend = this.state.cardsToSend;
+
+        cardsToSend.push(cardClicked);
+
+        cards = cards.map(x => {
+            x.active = false;
+            x.visible = x.id == id ? false : true;
+            return x
+        });
+
+        console.log("****************");
+        console.log(id);
+        console.log("~~~~~~~~~~~~~~~~~~~~~~");
+        console.log(cards);
+
+        this.setState({
+            cards: cards,
+            cardsToSend: cardsToSend,
+            cardClicked: null
         });
     }
 
@@ -81,12 +122,36 @@ class CardsInfo extends React.Component {
                         {text:'An Oedipus complex.', type:'white'},
                         {text:'Scientology.', type:'white'}];
 
+        let sendCardVisibility;
+        let sendCard;
+        let revertAction;
+        
+        if(this.state.cardsToSend.length == this.state.pick)
+        {
+            console.log("here @@@ ...");
+            sendCard = <Btn bgColor={"darkred"} text={"Send Card(s)"}
+                onClick={() => {this.props.sendCards(this.state.cardsToSend)}} />
+            
+            revertAction = <Btn text={"Revert Action"} />
+        }
+        else
+        {
+            console.log("and here @@@ ...");
+            sendCardVisibility = this.state.cardClicked != null ? "visible" : "hidden";
+            sendCard = <Btn bgColor={"darkred"} text={"Send Card"}
+                onClick={() => {this.sendCard(this.state.cardClicked.id)}} 
+                visibility={sendCardVisibility} />
+        }
+
         return (
             <nav className={drawerClasses.join(' ')} ref={this.setWrapperRef}>
                 <CloseIcon onClick={this.props.close}/>
                 <Grid item>
                     <CardSet cards={this.state.cards} cardClass={'playCard'} 
                         cardClick={this.cardClick}/>
+                </Grid>
+                <Grid item>
+                    {sendCard} {revertAction}
                 </Grid>
             </nav>
         );
