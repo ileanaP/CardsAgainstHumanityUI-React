@@ -73,13 +73,14 @@ class CardsInfo extends React.Component {
 
         this.setState({
             cards: cards,
-            cardClicked: cardClicked.length != 0 ? cardClicked[0] : null
+            cardClicked: cardClicked.length != 0 ? cardClicked[0].id : null
         });
     }
 
     sendCard = (id) => {
         let cards = this.state.cards;
         let cardClicked = cards.filter(x => x.active);
+        cardClicked = cardClicked.length != 0 ? cardClicked[0].id : null;
         let cardsToSend = this.state.cardsToSend;
 
         cardsToSend.push(cardClicked);
@@ -139,7 +140,7 @@ class CardsInfo extends React.Component {
             console.log("and here @@@ ...");
             sendCardVisibility = this.state.cardClicked != null ? "visible" : "hidden";
             sendCard = <Btn bgColor={"darkred"} text={"Send Card"}
-                onClick={() => {this.sendCard(this.state.cardClicked.id)}} 
+                onClick={() => {this.sendCard(this.state.cardClicked)}} 
                 visibility={sendCardVisibility} />
         }
 

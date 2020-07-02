@@ -144,6 +144,8 @@ class Game extends Component {
             });
         });
 
+        this.startRound();
+
         //const fetchRoundData = this.fetchRoundData();
 
         /*Promise.all([fetchRoundData]).then((responses) => {
@@ -309,6 +311,14 @@ class Game extends Component {
                     whiteCardsCounter: 10
                 });
             }) */
+        });
+
+        channel.bind("App\\Events\\UserSentCard", data => {
+            console.log("UserSentCard::: ", data);
+
+            console.log("************");
+            console.log(data);
+            console.log("************");
         });
     }
 
@@ -578,10 +588,20 @@ class Game extends Component {
             })
     }
 
-    sendCards = (stuff) => {
-        console.log("~~~~~~~~~~~~~~~~~~~");
-        console.log(stuff);
-        console.log("~~~~~~~~~~~~~~~~~~~");
+    sendCards = async (cards) => {
+        let dataa = {cards: JSON.stringify(cards)}
+
+        console.log("???");
+        console.log(dataa);
+        console.log("???");
+        
+        await Axios.post(global.api + 'rounds/' + this.round.id + '/users/' 
+                            + this.state.user.id + '/cards', dataa)
+            .then(data => {
+                console.log("+++++________+++++++_________");
+                console.log(data['data']);
+                console.log("+++++________+++++++_________");
+            })
     }
 
     render() {

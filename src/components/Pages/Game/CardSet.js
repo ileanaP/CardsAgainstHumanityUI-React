@@ -60,14 +60,6 @@ class CardSet extends Component {
                     if(card.visible != undefined)
                     {
                         visibility = card.visible ? "visible" : "hidden";
-                        if(card.id==1429)
-                        {
-                            console.log(" ++++ ");
-                            console.log(card);
-                            console.log(" ++++ ");
-                            console.log(visibility);
-                            console.log(" ++++ ");
-                        }
                     } 
 
                     return (
