@@ -49,11 +49,15 @@ class Game extends Component {
             game: [],
             stateStuff: "null ~~ " + user.id,
             confirmedPlayers: 0,
+            handCards: [],
+            showHandCards: false,
             currBlackCard: null,
             blackCardsCounter: -1,
             currWhiteCards: [],
             whiteCardsCounter: -1,
-            selectedWhiteCard: -1
+            selectedWhiteCard: -1,
+            currTsar: -1,
+            tsars: []
         }
 
         this.round = null;
@@ -67,13 +71,13 @@ class Game extends Component {
         this.setState({playerInfoOpen : playerInfoOpen});
     }
 
-    toggleCardsInfo = () => {
-        let cardsInfoOpen = !this.state.cardsInfoOpen;
-        this.setState({cardsInfoOpen : cardsInfoOpen});
+    toggleCardsInfo = (def = undefined) => {
+        let x = def != undefined ? (def ? true : false) : !this.state.cardsInfoOpen;
+
+        this.setState({cardsInfoOpen : x});
     }
 
     async componentDidMount() {
-
         this.subscribe();
 
         this.canUserAccessGame().then(stuff => {
@@ -114,13 +118,15 @@ class Game extends Component {
                         user: user,
                         players: players,
                         playersDisplay: "block",
-                        loadingDisplay: "none"
+                        loadingDisplay: "none",
+                        currTsar: 0,
+                        tsars: [578,768,967,2]
                     });
 
                     this.setState({
                         currBlackCard: {id: 116, 
                                         text: "I know when that hotline bling, that can only mean one thing: ____.", 
-                                        pick: 2},
+                                        pick: 1},
                         blackCardsCounter: 0,
                         playersDisplay: "none",
                         roundDisplay: "block"
@@ -148,7 +154,7 @@ class Game extends Component {
 
         //const fetchRoundData = this.fetchRoundData();
 
-        /*Promise.all([fetchRoundData]).then((responses) => {
+        /* Promise.all([fetchRoundData]).then((responses) => {
 
             console.log("~~~~");
             console.log(this.round);
@@ -165,14 +171,16 @@ class Game extends Component {
                         let userHand = this.userCards.slice(0,10);
                         this.userCards = this.userCards.slice(10, this.userCards.length);
                         
+                        let tsars = JSON.parse(this.round['tsars']);
 
                         this.setState({
                             userHand: userHand,
-                            cards: this.cards
+                            cards: this.cards,
+                            tsars: tsars
                         });
                     }
                 }); 
-        });*/
+        }); */
     }
 
     subscribe() {
@@ -316,9 +324,32 @@ class Game extends Component {
         channel.bind("App\\Events\\UserSentCard", data => {
             console.log("UserSentCard::: ", data);
 
-            console.log("************");
-            console.log(data);
-            console.log("************");
+            let handCards = this.state.handCards;
+
+            let handCard = {
+                user_id: data['user_id'],
+                cards: JSON.parse(data['cards'])
+            }
+
+            handCards.push(handCard);
+
+            let confirmedPlayers = this.state.confirmedPlayers;
+            let showHandCards =(handCards.length == confirmedPlayers) && confirmedPlayers ? true : false;
+
+            if(showHandCards && this.state.cardsInfoOpen)
+            {
+                this.toggleCardsInfo(false);
+                console.log(" *** ");
+                console.log(handCards);
+                console.log(" *** ");
+                console.log(showHandCards);
+                console.log(" *** ");
+            }
+
+            this.setState({
+                handCards: handCards,
+                showHandCards: showHandCards
+            })
         });
     }
 
@@ -594,6 +625,9 @@ class Game extends Component {
         console.log("???");
         console.log(dataa);
         console.log("???");
+        console.log(global.api + 'rounds/' + this.round.id + '/users/' 
+                            + this.state.user.id + '/cards');
+        console.log("???");
         
         await Axios.post(global.api + 'rounds/' + this.round.id + '/users/' 
                             + this.state.user.id + '/cards', dataa)
@@ -632,7 +666,7 @@ class Game extends Component {
             }
             else
                 actionButton = <Btn bgColor={"gray"} text={"Leave Game"}
-                                    onClick={() => { leaveGame().then(e => {this.setState({redirect: "/"});}) }} />
+                                    onClick={() => { leaveGame() }} />
         }
 
         let GMActionBtn;
@@ -659,6 +693,12 @@ class Game extends Component {
                             cards={this.state.currWhiteCards} sendCards={this.sendCards} 
                             pick={this.state.currBlackCard.pick}/>
         }
+
+        let handCards = this.state.showHandCards ? this.state.handCards : [];
+
+        let isTsar = this.state.user.id == this.state.tsars[this.state.currTsar] ? true : false;
+
+        let tsarOnClick = isTsar ? (x) => { this.updateGame(x) } : (x) => {}
 
         let paperWhiteContent = () => {
             return(
@@ -714,29 +754,12 @@ class Game extends Component {
                             </Grid>
                             <Grid item xs={8}>
                                 <Grid container>
-                                    {([...Array(6).keys()]).map( (card) => {
-                                        if(card == 0)
-                                            return (<div></div>);
-                                        
-                                        let cardss;
-
-                                        switch(card % 3)
-                                        {
-                                            case 0: cardss = [{text:'ala bala portocalaa', type:'white'}, 
-                                                                {text:'ala bala portocalaa', type:'white'}, 
-                                                                {text:'alaa balaa portocalaaa', type:'white'}];
-                                                    break;
-                                            case 1: cardss = [{text:'ala bala portocalaa', type:'white'}, 
-                                                    {text:'alaa balaa portocalaaa', type:'white'}];
-                                                    break;
-                                            case 2: cardss = [{text:'alaa balaa portocalaaa', type:'white'}];
-                                                    break;
-                                        }
+                                    {handCards.map( (handCard) => {
                                         return (
-                                            <Grid item>
-                                                <CardSet playerId={card} onClick={this.updateGame}
-                                                    selected={this.state.activeCardset == card ? true : false} 
-                                                    cardClass={'resCard'} cards={ cardss } />
+                                             <Grid item>
+                                                <CardSet playerId={handCard['user_id']} onClick={() => {tsarOnClick(handCard['user_id'])}}
+                                                    selected={this.state.activeCardset == handCard['user_id'] ? true : false} 
+                                                    cardClass={'resCard'} cards={ handCard['cards'] } />
                                             </Grid>
                                         );
                                     })}

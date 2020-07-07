@@ -73,6 +73,7 @@ export async function leaveGame()
         user['game'] = null;
         toStorage('userData', JSON.stringify(user));
 
+        history.push("/");
         history.go(0);
     })
     .catch(error => {
