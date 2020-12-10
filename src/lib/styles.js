@@ -130,6 +130,14 @@ export const styles = {
         backgroundColor: '#ffd280',
         color: 'darkgreen'
     },
+    deactivated: {
+        backgroundColor: 'gainsboro',
+        color: 'gray',
+        '&:hover': {
+            backgroundColor: 'gainsboro',
+            color: 'gray'
+        }
+    },
     cardset: {
         /*backgroundColor: 'moccasin',*/
         margin: '5px 5px',

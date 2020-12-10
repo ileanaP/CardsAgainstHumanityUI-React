@@ -25,6 +25,7 @@ class CardSet extends Component {
     }
 
     componentWillReceiveProps(props) {
+
         this.setState({
             cards: this.props.cards
         });
@@ -32,6 +33,7 @@ class CardSet extends Component {
 
     render()
     {
+
         const { classes } = this.props;
 
         let click;
@@ -54,18 +56,11 @@ class CardSet extends Component {
             <Box className={classs} 
                 onClick={click}>
                 {(this.state.cards).map( (card) => {
-                    let visibility = "visible";
-
-
-                    if(card.visible != undefined)
-                    {
-                        visibility = card.visible ? "visible" : "hidden";
-                    } 
 
                     return (
-                        <Card id={card.id} selected={card.active} 
+                        <Card key={"card-" + card.id} id={card.id} selected={card.active} 
                             type={card.type} text={card.text} cardClass={this.props.cardClass}
-                            onClick={() => {cardClick(card.id);}} visibility={visibility}/>
+                            onClick={() => {cardClick(card.id);}} alreadySelected={card.alreadySelected}/>
                     );
                 })}
             </Box>

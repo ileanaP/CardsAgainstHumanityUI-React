@@ -26,26 +26,29 @@ class  Card extends Component {
                 fontSize =  14;
         }
 
+        let alreadySelected = (props.alreadySelected != undefined && props.alreadySelected) ? true : false;
+
         this.state = {
             text: this.props.text,
             fontSize: fontSize,
             selected: this.props.selected,
-            visibility: this.props.visibility != undefined ? this.props.visibility : "visible"
+            alreadySelected: alreadySelected
         }
     }
 
     componentWillReceiveProps(props){
+
         if(props.selected != this.state.selected)
         {
             this.setState({selected: props.selected});
         }
         this.setState({
-            visibility: props.visibility != undefined ? props.visibility : "visible"
+            alreadySelected: props.alreadySelected
         });
     }
 
     render() {
-
+        
         const { classes } = this.props;
 
         let click;
@@ -58,15 +61,23 @@ class  Card extends Component {
         let classs = classes[this.props.type + "Card"] + ' '+ this.props.cardClass;
 
         if(this.state.selected)
-            classs += ' '+ classes['selected'];
-        else
-            classs += ' NOT selected';
+            classs += ' ' + classes['selected'];
 
+        if(this.state.alreadySelected)
+        {
+            classs += ' ' + classes['deactivated'];
+        }
+        
+/*         if(this.state.alreadySelected)
+        {
+                classs += ' ' + + classes['deactivated'];
+        } */
+
+            
         return (
             <Box clone pt={2} pr={1} pb={1} pl={2} 
                 className={classs}
-                onClick={click}
-                style={{visibility: this.state.visibility}}>
+                onClick={click}>
                 <Paper elevation={3}>
                     <Typography style={{fontSize: this.state.fontSize}}>
                         {this.state.text}

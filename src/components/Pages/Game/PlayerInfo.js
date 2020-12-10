@@ -58,8 +58,8 @@ class playerInfo extends React.Component {
     }
 }
 
-playerInfo.propTypes = {
+/* playerInfo.propTypes = {
     children: PropTypes.element.isRequired,
-};
+}; */
 
 export default withStyles(styles)(playerInfo);

@@ -80,13 +80,18 @@ class Game extends Component {
     async componentDidMount() {
         this.subscribe();
 
+        await Axios.get(global.api + 'games/' + this.state.id + '/users/' + this.state.user['id'])
+        .then(data => {
+            console.log("here <3");
+        });
+
         this.canUserAccessGame().then(stuff => {
             if(!this.allowedToPlay)
             {
                 console.log("canUserAccessGame redirect");
-                /* this.setState({
-                    redirect: "/"
-                }); */
+                // this.setState({
+                //     redirect: "/"
+                // });
             }
 
             this.fetchPlayers().then(stuff => {
@@ -131,6 +136,15 @@ class Game extends Component {
                         playersDisplay: "none",
                         roundDisplay: "block"
                     });
+
+                    this.setState({
+                        currBlackCard: {id: 13, 
+                                        text: "Step 1: ____. Step 2: ____. Step 3: Profit.", 
+                                        pick: 2},
+                        blackCardsCounter: 0,
+                        playersDisplay: "none",
+                        roundDisplay: "block"
+                    });
             
                     this.setState({
                         currWhiteCards: [{id: 2280, text: "An immediately regrettable $9 hot dog from the Boston Convention Center.", type: "white"},
@@ -156,14 +170,10 @@ class Game extends Component {
 
         /* Promise.all([fetchRoundData]).then((responses) => {
 
-            console.log("~~~~");
-            console.log(this.round);
-
                  const fetchCardData = this.fetchCardData(this.round['card_data']);
                 const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
 
                 Promise.all([ fetchCardData, fetchPlayerCards]).then((responses) => {
-                    console.log('got to here <3 <3');
                     if(this.cards == null || this.userCards == null)
                         this.setState({redirect: '/' });
                     else
@@ -263,9 +273,9 @@ class Game extends Component {
         });
 
         channel.bind("App\\Events\\StartRound", data => {
-/*            console.log("StartRound::: ", data);
+           console.log("StartRound::: ", data);
 
-             let blackCards = data['round']['card_data'];
+            /* let blackCards = data['round']['card_data'];
 
             this.fetchCardData(blackCards).then(data => {
                 blackCards = JSON.parse(blackCards);
@@ -279,9 +289,6 @@ class Game extends Component {
                     }
                     return res;
                 });
-
-                console.log("~~~~~~ <<<<<<<<<< ~~~~~~~");
-                console.log(this.cards['black'][0]);
 
                 this.setState({
                     currBlackCard: this.cards['black'][0],
@@ -311,9 +318,6 @@ class Game extends Component {
                     return res;
                 });
 
-                console.log("~~~~~~ >>>>>>>>>>>>>>>>>>>> ~~~~~~~");
-                console.log(this.cards['white'].slice(0,10));
-
                 this.setState({
                     currWhiteCards: this.cards['white'].slice(0,10),
                     whiteCardsCounter: 10
@@ -339,13 +343,10 @@ class Game extends Component {
             if(showHandCards && this.state.cardsInfoOpen)
             {
                 this.toggleCardsInfo(false);
-                console.log(" *** ");
-                console.log(handCards);
-                console.log(" *** ");
-                console.log(showHandCards);
-                console.log(" *** ");
             }
 
+            console.log(handCards);
+            
             this.setState({
                 handCards: handCards,
                 showHandCards: showHandCards
@@ -381,17 +382,18 @@ class Game extends Component {
 
     async canUserAccessGame()
     {
-        let user = this.state.user
-        user['game'] = this.state.id;
-        toStorage('userData', JSON.stringify(user));
+        /* *** testing stuff */
+        // let user = this.state.user
+        // user['game'] = this.state.id;
+        // toStorage('userData', JSON.stringify(user));
 
-        user['confirmed'] = 1;
+        // user['confirmed'] = 1;
 
-        this.setState({
-            user: user
-        });
+        // this.setState({
+        //     user: user
+        // });
 
-/*         if(!fromStorage('loggedIn'))
+        if(!fromStorage('loggedIn'))
         {
             this.allowedToPlay = false;
         }
@@ -429,7 +431,7 @@ class Game extends Component {
                 {
                     console.log(error);
                 }
-            }); */
+            });
     }
 
     async fetchPlayers(){
@@ -451,14 +453,6 @@ class Game extends Component {
                 let confirmedPlayers = players.filter(e => e.confirmed === 1).length;
 
                 let user = this.state.user;
-
-                console.log(" *** players *** ");
-                console.log(players);
-                console.log(" *** players *** ");
-                console.log(user);
-                console.log(" *** players *** ");
-                console.log(confirmedPlayers);
-                console.log(" *** players *** ");
                 
                 this.setState({
                     players: players,
@@ -498,9 +492,6 @@ class Game extends Component {
 
 /*         await Axios.get(global.api + 'games/' + this.state.id)
             .then(data => {
-                console.log("__________________________________");
-                console.log(data['data']);
-
                 this.setState({game: data['data'] });
             })
             .catch(error => {
@@ -528,9 +519,7 @@ class Game extends Component {
             .catch();
     }
 
-    updateGame = (id) => {
-        console.log("updateGame click was clicked");
-        
+    updateGame = (id) => {        
         this.setState({
             activeCardset: (this.state.activeCardset == id) ? 0 : id
         });
@@ -539,13 +528,9 @@ class Game extends Component {
     startRound = async () => {
         await Axios.post(global.api + 'games/' + this.state.id + '/rounds')
             .then(data => {
-                console.log(data["data"]);
-
                 this.round = data["data"];
 
 /*                 this.fetchPlayerCards(this.round.id).then(e => {
-                    console.log("player cards fetched");
-                    console.log(this.userCards);
                 }); */
 
 /*                 this.setState({
@@ -579,21 +564,21 @@ class Game extends Component {
 
         if(player.id == this.state.user.id && !player.confirmed)
         {
-            link = <a onClick={() => {this.confirm(player)}} href="#">(confirm)</a>;
+            link = <a key={"game-paperwhite-player-a-" + player.id} onClick={() => {this.confirm(player)}} href="#">(confirm)</a>;
         }
         else
         {
             if(this.state.user.creator && this.state.user.confirmed)
             {
                 if(this.state.user.id != player.id)
-                    link = <a onClick={() => {this.eject(player)}} href="#">(eject)</a>;
+                    link = <a key={"game-paperwhite-player-a-" + player.id} onClick={() => {this.eject(player)}} href="#">(eject)</a>;
                 else
                     link = "";
             }
             else
             {
                 if(!player.confirmed && this.state.user.id == player.id)
-                    link = <a onClick={() => {this.confirm(player)}} href="#">(confirm)</a>;
+                    link = <a key={"game-paperwhite-player-a-" + player.id} onClick={() => {this.confirm(player)}} href="#">(confirm)</a>;
                 else
                     link = "";
             }
@@ -601,11 +586,11 @@ class Game extends Component {
 
         let firstPart = player.name + (player.creator ? " (GM)" : "");
         
-        return (<div>{firstPart} {link}</div>);
+        return (<div key={"game-paperwhite-player-div-" + player.id} >{firstPart} {link}</div>);
     }
 
     yesAction = () => {
-        console.log("yep this was literally called :/ ");
+        console.log("this was called");
     }
 
     pingPlayersToConfirm = async () => {
@@ -620,22 +605,10 @@ class Game extends Component {
     }
 
     sendCards = async (cards) => {
-        let dataa = {cards: JSON.stringify(cards)}
 
-        console.log("???");
-        console.log(dataa);
-        console.log("???");
-        console.log(global.api + 'rounds/' + this.round.id + '/users/' 
-                            + this.state.user.id + '/cards');
-        console.log("???");
-        
-        await Axios.post(global.api + 'rounds/' + this.round.id + '/users/' 
-                            + this.state.user.id + '/cards', dataa)
-            .then(data => {
-                console.log("+++++________+++++++_________");
-                console.log(data['data']);
-                console.log("+++++________+++++++_________");
-            })
+        let cardsData = {cards: JSON.stringify(cards)}
+
+        await Axios.post(global.api + 'rounds/' + this.round.id + '/users/' + this.state.user.id + '/cards', cardsData);
     }
 
     render() {
@@ -650,9 +623,7 @@ class Game extends Component {
             return obj.id === this.state.user.id
           })[0];
 
-        
-        console.log(creator);
-        console.log("~~~~~~~~~"); */
+        */
 
         let actionButton;
         
@@ -703,10 +674,10 @@ class Game extends Component {
         let paperWhiteContent = () => {
             return(
             <div>
-                <Grid item style={{height:"80%"}}>
-                    <div style={{display: "inlineBlock", height: "190px"}}>
-                        <p className={classes.fancyTitle}>Players</p>
-                        {this.state.players.map((player) => {
+                <Grid key={"game-paperwhite-grid-1"} item style={{height:"80%"}}>
+                    <div key={"game-paperwhite-div-1"} style={{display: "inlineBlock", height: "190px"}}>
+                        <p key={"game-paperwhite-p-1"} className={classes.fancyTitle}>Players</p>
+                        {this.state.players.map((player, idx) => {
         
                             let playerLine = this.constructPlayerLine(player);
                             
@@ -714,7 +685,7 @@ class Game extends Component {
                                                             : (player.confirmed ? classes.confirmedClass : '');
 
                             return(
-                                <li className={playerClass}
+                                <li key={"game-paperwhite-li-" + idx} className={playerClass}
                                         style={{listStyleType: "none"}}>
                                             {playerLine}
                                 </li>
@@ -739,7 +710,7 @@ class Game extends Component {
                 <Grid item style={{width:"100%"}}>
                     <div className={"players"} style={{display: this.state.playersDisplay}}>
                         
-                    <PaperWhite content={paperWhiteContent}/>
+                    <PaperWhite key={"game-paperwhite-1"} content={paperWhiteContent}/>
                     </div>
                     <div className={"round"} style={{display: this.state.roundDisplay}}>
                         <PlayerInfo open={this.state.playerInfoOpen} close={this.togglePlayerInfo}/>
@@ -768,10 +739,10 @@ class Game extends Component {
                             </Grid>
                             <div className={classes.sideHustle}>
                                 <div className={classes.sideHustleTop}>
-                                    <Burger bgColor={"purple"} click={this.togglePlayerInfo} />
+                                    <Burger bgColor={"purple"} click={this.togglePlayerInfo} purpose={"playerInfo"}/>
                                 </div>
                                 <div className={classes.sideHustleBottom}>
-                                    <Burger bgColor={"purple"} click={this.toggleCardsInfo} />
+                                    <Burger bgColor={"purple"} click={this.toggleCardsInfo} purpose={"cardsInfo"}/>
                                 </div>
                             </div>
                         </Grid>

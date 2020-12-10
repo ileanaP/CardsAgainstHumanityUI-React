@@ -15,9 +15,11 @@ function NavLinks(props) {
 
     return(
         <ul>
-            {links.map((link) => {
+            {links.map((link, count) => {
                 return(
-                    <li><Link to={link.href} onClick={props.click}> {link.name} </Link></li>
+                    <li key={"navlink-li-" + count} >
+                        <Link key={"navlink-link-" + count} to={link.href} onClick={props.click}> {link.name} </Link>
+                    </li>
                 );
             })
 

@@ -13,9 +13,6 @@ class Main extends Component {
     constructor(props){
         super(props);
 
-        console.log(localStorage.getItem('loggedIn'));
-        console.log(localStorage.getItem('userData'));
-
         let user = fromStorage('userData');
 
         let loggedIn = user != null ? true : false;

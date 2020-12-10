@@ -98,8 +98,6 @@ class NewGame extends Component {
                 cardsets: cardsets
             }
 
-            console.log(data);
-
             await Axios.post(global.api + 'games', data)
                 .then(data => {
                     let game = data["data"];
@@ -133,8 +131,6 @@ class NewGame extends Component {
 
         cardset = Number(cardset);
 
-        console.log(e.target.checked);
-
         let cardsets = this.state.cardsets.map(es => {
             es.checked = es.id == cardset ? e.target.checked : es.checked;
             return es;
@@ -144,8 +140,6 @@ class NewGame extends Component {
             this.cardsetsToSend = this.cardsetsToSend.filter(x => x != cardset)
         else
             this.cardsetsToSend.push(cardset);
-
-        console.log(this.cardsetsToSend);
 
         this.setState({
             cardsets: cardsets
@@ -181,29 +175,29 @@ class NewGame extends Component {
         let content = () => {
             return(
             <form noValidate autoComplete="off">
-                <Grid item style={{height:"80%"}}>
-                    <Grid container spacing={2} alignItems="center" wrap="nowrap" direction={'column'}>
-                        <Grid item>
+                <Grid key={"newgame-grid-1"} item style={{height:"80%"}}>
+                    <Grid key={"newgame-grid-2"} container spacing={2} alignItems="center" wrap="nowrap" direction={'column'}>
+                        <Grid key={"newgame-grid-3"} item>
                             <p className={classes.fancyTitle}>New Game</p>
                         </Grid>
-                        <Grid item>
-                        <TextField id="standard-basic" label="Name" onChange={(e) => {this.onChange(e)}}
+                        <Grid key={"newgame-grid-4"} item>
+                        <TextField key={"newgame-textfield-1"} id="standard-basic" label="Name" onChange={(e) => {this.onChange(e)}}
                                 className={classes.formItem} name="name" />
                         </Grid>
-                        <Grid item>
+                        <Grid key={"newgame-grid-5"} item>
                             <TextField id="standard-basic" label="Password" onChange={(e) => {this.onChange(e)}}
                                     className={classes.formItem} name="password" />
                         </Grid>
-                        <Grid item>
-                            <div className={classes.boxCardset}>
-                                <div style={{float:"right", marginTop:"10px"}}>
-                                    <Link className={classes.toggleSelect} onClick={() => {this.toggleSelect()}}>{this.state.toggleSelect}</Link>
+                        <Grid key={"newgame-grid-6"} item>
+                            <div  key={"newgame-div-1"}  className={classes.boxCardset}>
+                                <div key={"newgame-div-2"} style={{float:"right", marginTop:"10px"}}>
+                                    <Link key={"newgame-link-1"} className={classes.toggleSelect} onClick={() => {this.toggleSelect()}}>{this.state.toggleSelect}</Link>
                                 </div>
-                                <div style={{clear:"both"}}></div>
+                                <div key={"newgame-div-3"} style={{clear:"both"}}></div>
                                 {
-                                this.state.cardsets.map((cardset) => {
+                                this.state.cardsets.map((cardset, idx) => {
                                     return(
-                                        <FormControlLabel
+                                        <FormControlLabel key={"newgame-label-" + idx}
                                             control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} 
                                                             defaultChecked={true} checked={cardset.checked} onChange={(e) => {this.toggleCardset(e, cardset.id)}}/>}
                                             label={cardset.name}
@@ -213,8 +207,8 @@ class NewGame extends Component {
                                 }
                             </div>
                         </Grid>
-                        <Grid item>
-                            <Btn bgColor={"darkred"} text={"Start Game"}
+                        <Grid key={"newgame-grid-7"} item>
+                            <Btn key={"newgame-btn-8"} bgColor={"darkred"} text={"Start Game"}
                                     onClick={() => {this.startGame()}}  />
                         </Grid>
                     </Grid>
@@ -224,7 +218,7 @@ class NewGame extends Component {
         }
 
         return(
-            <PaperWhite content={content}/>
+            <PaperWhite key={"newgame-paperwhite-1"} content={content}/>
         );
     }
   }

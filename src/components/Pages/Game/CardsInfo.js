@@ -17,7 +17,7 @@ class CardsInfo extends React.Component {
         let pick = parseInt(props.pick);
 
         let cards = this.props.cards.map(x => {
-            x.visible = true;
+            x.alreadySelected = false;
             return x;
         });
 
@@ -64,13 +64,17 @@ class CardsInfo extends React.Component {
     }
     
     cardClick = (id) => {
+
         let cards = this.state.cards.map(x => {
-            x.active = x.id == id && !x.active ? true : false;
+            x.active = x.id == id && !x.active && !x.alreadySelected ? true : false;
             return x
         });
 
         let cardClicked = cards.filter(x => x.active);
 
+        if(!cardClicked.length)
+            return;
+        
         this.setState({
             cards: cards,
             cardClicked: cardClicked.length != 0 ? cardClicked[0].id : null
@@ -87,18 +91,36 @@ class CardsInfo extends React.Component {
 
         cards = cards.map(x => {
             x.active = false;
-            x.visible = x.id == id ? false : true;
+
+            if(x.id == id)
+            {
+                x.alreadySelected = true;
+            }
+            else
+            {
+                x.alreadySelected = x.alreadySelected !== undefined ? x.alreadySelected : false;
+            }
+
             return x
         });
-
-        console.log("****************");
-        console.log(id);
-        console.log("~~~~~~~~~~~~~~~~~~~~~~");
-        console.log(cards);
 
         this.setState({
             cards: cards,
             cardsToSend: cardsToSend,
+            cardClicked: null
+        });
+    }
+
+    revertActions = () => {
+        let cards = this.state.cards.map(x => {
+            x.active          = false;
+            x.alreadySelected = false;
+            return x
+        });
+
+        this.setState({
+            cards: cards,
+            cardsToSend: [],
             cardClicked: null
         });
     }
@@ -127,17 +149,19 @@ class CardsInfo extends React.Component {
         let sendCard;
         let revertAction;
         
+        if(this.state.cardsToSend.length)
+        {
+            revertAction = <Btn text={"Revert Actions"} 
+                    onClick={() => {this.revertActions()}} />
+        }
+
         if(this.state.cardsToSend.length == this.state.pick)
         {
-            console.log("here @@@ ...");
             sendCard = <Btn bgColor={"darkred"} text={"Send Card(s)"}
                 onClick={() => {this.props.sendCards(this.state.cardsToSend)}} />
-            
-            revertAction = <Btn text={"Revert Action"} />
         }
         else
         {
-            console.log("and here @@@ ...");
             sendCardVisibility = this.state.cardClicked != null ? "visible" : "hidden";
             sendCard = <Btn bgColor={"darkred"} text={"Send Card"}
                 onClick={() => {this.sendCard(this.state.cardClicked)}} 
@@ -159,8 +183,8 @@ class CardsInfo extends React.Component {
     }
 }
 
-CardsInfo.propTypes = {
+/* CardsInfo.propTypes = {
     children: PropTypes.element.isRequired,
-};
+}; */
 
 export default withStyles(styles)(CardsInfo);
