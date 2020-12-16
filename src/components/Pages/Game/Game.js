@@ -39,7 +39,6 @@ class Game extends Component {
             display: 'none',
             playerInfoOpen: false,
             cardsInfoOpen: false,
-            cards: [],
             user: user,
             activeCardset: 0,
             players: [],
@@ -47,7 +46,7 @@ class Game extends Component {
             roundDisplay: "none",
             loadingDisplay: "block",
             game: [],
-            stateStuff: "null ~~ " + user.id,
+            stateStuff: "userID ~~ " + user.id,
             confirmedPlayers: 0,
             handCards: [],
             showHandCards: false,
@@ -57,7 +56,8 @@ class Game extends Component {
             whiteCardsCounter: -1,
             selectedWhiteCard: -1,
             currTsar: -1,
-            tsars: []
+            tsars: [],
+            cardsAlreadySent: false
         }
 
         this.round = null;
@@ -80,117 +80,173 @@ class Game extends Component {
     async componentDidMount() {
         this.subscribe();
 
-        await Axios.get(global.api + 'games/' + this.state.id + '/users/' + this.state.user['id'])
-        .then(data => {
-            console.log("here <3");
-        });
+        const canUserAccessGame = this.canUserAccessGame();
 
         this.canUserAccessGame().then(stuff => {
-            if(!this.allowedToPlay)
-            {
-                console.log("canUserAccessGame redirect");
-                // this.setState({
-                //     redirect: "/"
-                // });
-            }
+                if(!this.allowedToPlay)
+                {
+                    console.log("canUserAccessGame redirect");
+                    // this.setState({
+                    //     redirect: "/"
+                    // });
+                }
+    
+                this.fetchPlayers().then(stuff => {
 
-            this.fetchPlayers().then(stuff => {
-                let players = this.state.players.map((obj) => {
-                    if(obj.id == this.state.game.creator_id)
+                    let players = this.state.players.map((obj) => {
+                        if(obj.id == this.state.game.creator_id)
+                        {
+                            obj.creator = true;
+                        }
+                        return  obj;
+                    });
+    
+                    this.setState({
+                        players: players
+                    });
+    
+                    this.fetchGameData().then(stuff => {
+                        let user = this.state.user;
+                        let players = this.state.players;
+                        
+                        user.creator = (this.state.user.id == this.state.game.creator_id) ? true : false;
+    
+                        players = players.map((e) => {
+                            if(e.id == this.state.game.creator_id)
+                                e.creator = true;
+                            return e;
+                        });
+
+                        players.sort((a, b) => (!a.creator) ? 1 : -1)
+
+/*                         let tsars = players.map(players => players.id);
+                        tsars.sort((a, b) => (a > b) ? 1 : -1) */
+
+                        /* *** DISPLAY ** */
+                        // console.log("===============");
+                        // console.log(players);
+                        // console.log("===============");
+                        
+                        this.setState({
+                            user: user,
+                            players: players,
+                            playersDisplay: "block",
+                            loadingDisplay: "none",
+                            currTsar: 0
+                        });
+    
+                        /* *** BEGIN TESTING ** */
+                        /* this.setState({
+                            user: user,
+                            players: players,
+                            playersDisplay: "block",
+                            loadingDisplay: "none",
+                            currTsar: 0,
+                            tsars: [578,768,967,2]
+                        });
+    
+                        this.setState({
+                            currBlackCard: {id: 116, 
+                                            text: "I know when that hotline bling, that can only mean one thing: ____.", 
+                                            pick: 1},
+                            blackCardsCounter: 0,
+                            playersDisplay: "none",
+                            roundDisplay: "block"
+                        }); 
+    
+                        this.setState({
+                            currBlackCard: {id: 13, 
+                                            text: "Step 1: ____. Step 2: ____. Step 3: Profit.", 
+                                            pick: 2},
+                            blackCardsCounter: 0,
+                            playersDisplay: "none",
+                            roundDisplay: "block"
+                        });
+                
+                        this.setState({
+                            currWhiteCards: [{id: 2280, text: "An immediately regrettable $9 hot dog from the Boston Convention Center.", type: "white"},
+                                                {id: 2227, text: "The Genophage.", type: "white"},
+                                                {id: 853, text: "An older woman who knows her way around the penis.", type: "white"},
+                                                {id: 1851, text: "Antidepressants.", type: "white"},
+                                                {id: 2411, text: "A big brain full of facts and sadness.", type: "white"},
+                                                {id: 1429, text: "Being a hideous beast that no one could love.", type: "white"},
+                                                {id: 1858, text: "Working so hard to have muscles and then having them.", type: "white"},
+                                                {id: 703, text: "Running out of semen.", type: "white"},
+                                                {id: 1148, text: "Pikies.", type: "white"},
+                                                {id: 1708, text: "Lots and lots of abortions.", type: "white"}],
+                            whiteCardsCounter: 10
+                        }); */
+                        /* *** END TESTING **** */
+                    });
+    
+                }); 
+
+                const tryGetCurrentRound = this.tryGetCurrentRound();
+
+                Promise.all([tryGetCurrentRound]).then((responses) => {
+                    if(this.round != null)
                     {
-                        obj.creator = true;
+                        let blackCards = this.round['card_data'];
+                       
+                        this.setBlackCards(blackCards);
+        
+        
+                        let roundId = this.round['id'];
+                        
+                        const getCurrUserCardData = this.getCurrUserCardData();
+        
+                        Promise.all([getCurrUserCardData]).then((responses) => {
+        
+                        });
+        
+                        //setBlackCards
+                        //this.setCards();
                     }
-                    return  obj;
                 });
 
-                this.setState({
-                    players: players
-                });
 
-                this.fetchGameData().then(stuff => {
-                    let user = this.state.user;
-                    let players = this.state.players;
-                    
-                    user.creator = (this.state.user.id == this.state.game.creator_id) ? true : false;
-
-                    players = players.map((e) => {
-                        if(e.id == this.state.game.creator_id)
-                            e.creator = true;
-                        return e;
-                    });
-
-                    this.setState({
-                        user: user,
-                        players: players,
-                        playersDisplay: "block",
-                        loadingDisplay: "none",
-                        currTsar: 0,
-                        tsars: [578,768,967,2]
-                    });
-
-                    this.setState({
-                        currBlackCard: {id: 116, 
-                                        text: "I know when that hotline bling, that can only mean one thing: ____.", 
-                                        pick: 1},
-                        blackCardsCounter: 0,
-                        playersDisplay: "none",
-                        roundDisplay: "block"
-                    });
-
-                    this.setState({
-                        currBlackCard: {id: 13, 
-                                        text: "Step 1: ____. Step 2: ____. Step 3: Profit.", 
-                                        pick: 2},
-                        blackCardsCounter: 0,
-                        playersDisplay: "none",
-                        roundDisplay: "block"
-                    });
-            
-                    this.setState({
-                        currWhiteCards: [{id: 2280, text: "An immediately regrettable $9 hot dog from the Boston Convention Center.", type: "white"},
-                                            {id: 2227, text: "The Genophage.", type: "white"},
-                                            {id: 853, text: "An older woman who knows her way around the penis.", type: "white"},
-                                            {id: 1851, text: "Antidepressants.", type: "white"},
-                                            {id: 2411, text: "A big brain full of facts and sadness.", type: "white"},
-                                            {id: 1429, text: "Being a hideous beast that no one could love.", type: "white"},
-                                            {id: 1858, text: "Working so hard to have muscles and then having them.", type: "white"},
-                                            {id: 703, text: "Running out of semen.", type: "white"},
-                                            {id: 1148, text: "Pikies.", type: "white"},
-                                            {id: 1708, text: "Lots and lots of abortions.", type: "white"}],
-                        whiteCardsCounter: 10
-                    });
-                });
-
-            });
         });
 
-        this.startRound();
+        
+    }
 
-        //const fetchRoundData = this.fetchRoundData();
+    async getCurrUserCardData(roundId) {
+        await Axios.get(global.getCurrUserCardData(this.round['id']))
+        .then(data => {
 
-        /* Promise.all([fetchRoundData]).then((responses) => {
+            let playerCards = JSON.stringify(data['data'][this.state.user.id]);
 
-                 const fetchCardData = this.fetchCardData(this.round['card_data']);
-                const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
+            this.setWhiteCards(playerCards);
 
-                Promise.all([ fetchCardData, fetchPlayerCards]).then((responses) => {
-                    if(this.cards == null || this.userCards == null)
-                        this.setState({redirect: '/' });
-                    else
-                    {
-                        let userHand = this.userCards.slice(0,10);
-                        this.userCards = this.userCards.slice(10, this.userCards.length);
-                        
-                        let tsars = JSON.parse(this.round['tsars']);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
 
-                        this.setState({
-                            userHand: userHand,
-                            cards: this.cards,
-                            tsars: tsars
-                        });
-                    }
-                }); 
-        }); */
+    setCards = () => {
+
+        /* const fetchCardData = this.fetchCardData(this.round['card_data']);
+        const fetchPlayerCards = this.fetchPlayerCards(this.round['id']);
+
+        Promise.all([ fetchCardData, fetchPlayerCards]).then((responses) => {
+            if(this.cards == null || this.userCards == null)
+            {
+                //this.setState({redirect: '/' });
+            }
+            else
+            {
+                let currWhiteCards = this.cards['white'].slice(0,10);
+                this.cards['white'] = this.cards['white'].slice(10, this.userCards.length);
+                
+                let tsars = JSON.parse(this.round['tsars']);
+
+                this.setState({
+                    currWhiteCards: currWhiteCards,
+                    tsars: tsars
+                });
+            }
+        });  */
     }
 
     subscribe() {
@@ -275,9 +331,12 @@ class Game extends Component {
         channel.bind("App\\Events\\StartRound", data => {
            console.log("StartRound::: ", data);
 
-            /* let blackCards = data['round']['card_data'];
+            let blackCards = data['round']['card_data'];
 
-            this.fetchCardData(blackCards).then(data => {
+            this.setBlackCards(blackCards);
+
+            //sent this to setBlackCards
+            /* this.fetchCardData(blackCards).then(data => {
                 blackCards = JSON.parse(blackCards);
 
                 this.cards['black'] = blackCards.map(x => {
@@ -300,33 +359,19 @@ class Game extends Component {
         });
 
         channel.bind("App\\Events\\RoundCards", data => {
-            /* console.log("RoundCards::: ", data);
+            console.log("RoundCards::: ", data);
 
             let playerCards = JSON.stringify(data['cards'][this.state.user.id]);
 
-            this.fetchCardData(playerCards).then(data => {
-
-                playerCards = JSON.parse(playerCards);
-
-                this.cards['white'] = playerCards.map(x => {
-                    let res = data.filter(xx => (xx.id == x))
-                    res = {
-                        id: res[0].id,
-                        text: res[0].text,
-                        type: "white"
-                    }
-                    return res;
-                });
-
-                this.setState({
-                    currWhiteCards: this.cards['white'].slice(0,10),
-                    whiteCardsCounter: 10
-                });
-            }) */
+            this.setWhiteCards(playerCards);
         });
 
         channel.bind("App\\Events\\UserSentCard", data => {
             console.log("UserSentCard::: ", data);
+
+            /* console.log("+++++++++++++");
+            console.log(data);
+            console.log("+++++++++++++"); */
 
             let handCards = this.state.handCards;
 
@@ -335,7 +380,26 @@ class Game extends Component {
                 cards: JSON.parse(data['cards'])
             }
 
+            /* console.log("+++++++++++++");
+            console.log(handCard);
+            console.log("+++++++++++++");
+
             handCards.push(handCard);
+
+            console.log("@@@@@@@@@@@@@@@@@");
+            console.log(handCards);
+            console.log("@@@@@@@@@@@@@@@@@"); */
+
+            handCards = removeDuplicates(handCards);
+
+            if(data['alreadySent'] == '1')
+            {
+                notif({msg: "You already sent white card(s) for this black card.", type: "pink"});
+                
+                this.setState({
+                    cardsAlreadySent: true
+                });
+            }
 
             let confirmedPlayers = this.state.confirmedPlayers;
             let showHandCards =(handCards.length == confirmedPlayers) && confirmedPlayers ? true : false;
@@ -351,6 +415,51 @@ class Game extends Component {
                 handCards: handCards,
                 showHandCards: showHandCards
             })
+        });
+    }
+
+    setWhiteCards = (playerCards) => {
+        this.fetchCardData(playerCards).then(data => {
+
+            playerCards = JSON.parse(playerCards);
+
+            this.cards['white'] = playerCards.map(x => {
+                let res = data.filter(xx => (xx.id == x))
+                res = {
+                    id: res[0].id,
+                    text: res[0].text,
+                    type: "white"
+                }
+                return res;
+            });
+
+            this.setState({
+                currWhiteCards: this.cards['white'].slice(0,10),
+                whiteCardsCounter: 10
+            });
+        })
+    }
+
+    setBlackCards = (blackCards) => {
+        this.fetchCardData(blackCards).then(data => {
+            blackCards = JSON.parse(blackCards);
+
+            this.cards['black'] = blackCards.map(x => {
+                let res = data.filter(xx => (xx.id == x))
+                res = {
+                    id: res[0].id,
+                    text: res[0].text,
+                    pick: res[0].pick
+                }
+                return res;
+            });
+
+            this.setState({
+                currBlackCard: this.cards['black'][0],
+                blackCardsCounter: 0,
+                playersDisplay: "none",
+                roundDisplay: "block"
+            });
         });
     }
 
@@ -398,12 +507,15 @@ class Game extends Component {
             this.allowedToPlay = false;
         }
 
-        await Axios.get(global.api + 'games/' + this.state.id + '/users/' + this.state.user['id'])
+        let user = this.state.user;
+        let gameId = this.state.id;
+        let userId = this.state.user['id'];
+
+        await Axios.get(global.getTryUserEnterGameURL(gameId, user['id']))
             .then(data => {
-                let user = this.state.user
-                if(this.state.user['game'] != this.state.id)
+                if(user['game'] != gameId)
                 {
-                    user['game'] = this.state.id;
+                    user['game'] = gameId;
                     toStorage('userData', JSON.stringify(user));
                 }
                 
@@ -435,7 +547,7 @@ class Game extends Component {
     }
 
     async fetchPlayers(){
-/*         await Axios.get(global.api + 'games/' + this.state.id + '/users')
+         await Axios.get(global.getGamePlayersURL(this.state.id))
             .then(data => {
 
                 let players = data['data'].map((elem) => {
@@ -463,21 +575,24 @@ class Game extends Component {
             .catch(error => {
                 console.log("fetchPlayers error");
                 //this.setState({redirect: '/'});
-            }); */
+            });
 
-            this.setState({
+            /* *** BEGIN TESTING ** */
+            /* this.setState({
                 players: [{id:578, name:"Spencer Friesen", creator:true, confirmed: 1},
                             {id:2, name:"Arne Wilderman", creator:false, confirmed: 1},
                             {id:768, name:"Asha Gutmann", creator:false, confirmed: 1},
                             {id:967, name:"Leonie Oberbrunner Jr.", creator:false, confirmed: 1}],
                 user: this.state.user,
                 confirmedPlayers: 4
-            });
+            }); */
+            /* *** END TESTING **** */
     }
 
     async fetchGameData() {
 
-        this.setState({
+        /* *** BEGIN TESTING ** */
+        /* this.setState({
             game: {cardsets: "[2,103,134,166,191,235,271,342,398,406,414,417,421,430,437,447,454,459,466,469,476,478,482,485,487,494,499,505,510,517,521,530,533,541,552,560,566,568,572,2131,2152,2374]",
                         created_at: "2020-06-26T11:07:17.000000Z",
                         creator_id: 578,
@@ -488,22 +603,25 @@ class Game extends Component {
                         updated_at: "2020-06-26T11:07:17.000000Z",
                         winner_id: null
                         }
-        });
+        }); */
+        /* *** END TESTING **** */
 
-/*         await Axios.get(global.api + 'games/' + this.state.id)
+        await Axios.get(global.getGameURL(this.state.id))
             .then(data => {
                 this.setState({game: data['data'] });
             })
             .catch(error => {
                 console.log("fetchGameData error");
                 //this.setState({redirect: '/'});
-            }); */
+            });
     }
 
     fetchCardData(cards){
 
         return Axios.get(global.api + 'cards/' + cards)
             .then(data => {
+
+
                 return data['data'];
             })
             .catch(error => {
@@ -512,7 +630,7 @@ class Game extends Component {
     }
 
     async fetchPlayerCards(round){
-        await Axios.get(global.api + 'users/' + this.state.user['id'] + '/rounds/' + round)
+        await Axios.get(global.getUserCardsForCurrRound(this.state.user['id'],round))
             .then(data => {
                 this.userCards = data['data'];
             })
@@ -526,9 +644,11 @@ class Game extends Component {
     }
 
     startRound = async () => {
-        await Axios.post(global.api + 'games/' + this.state.id + '/rounds')
+        await Axios.post(global.getGameRoundData(this.state.id))
             .then(data => {
                 this.round = data["data"];
+
+                console.log(this.round);
 
 /*                 this.fetchPlayerCards(this.round.id).then(e => {
                 }); */
@@ -537,6 +657,29 @@ class Game extends Component {
                     playersDisplay: "none",
                     roundDisplay: "block"
                 }); */
+            })
+            .catch(error => {
+
+            });
+    }
+
+    tryGetCurrentRound = async () => {
+        let gameId = this.state.id;
+
+        await Axios.get(global.tryGetGameRoundData(gameId))
+            .then(data => {
+                
+                let round = data["data"];
+
+                if(round != '')
+                {
+                    this.round = data["data"];
+
+                    /* this.setState({
+                        playersDisplay: "none",
+                        roundDisplay: "block"
+                    }); */
+                }
             })
             .catch(error => {
 
@@ -606,7 +749,10 @@ class Game extends Component {
 
     sendCards = async (cards) => {
 
-        let cardsData = {cards: JSON.stringify(cards)}
+        let cardsData = {
+            cards: JSON.stringify(cards),
+            currBlackCardNr: this.state.blackCardsCounter
+        }
 
         await Axios.post(global.api + 'rounds/' + this.round.id + '/users/' + this.state.user.id + '/cards', cardsData);
     }
@@ -662,7 +808,8 @@ class Game extends Component {
             blackCard = <Card text={this.state.currBlackCard.text} type="black" />;
             cardsInfo = <CardsInfo open={this.state.cardsInfoOpen} close={this.toggleCardsInfo} 
                             cards={this.state.currWhiteCards} sendCards={this.sendCards} 
-                            pick={this.state.currBlackCard.pick}/>
+                            pick={this.state.currBlackCard.pick}
+                            cardsAlreadySent={this.state.cardsAlreadySent}/>
         }
 
         let handCards = this.state.showHandCards ? this.state.handCards : [];
