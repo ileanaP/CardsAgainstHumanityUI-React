@@ -20,7 +20,7 @@ import { styles } from '../../../lib/styles.js';
 import Burger from '../../addons/Burger';
 import { useParams, Redirect } from "react-router-dom";
 import Pusher from 'pusher-js';
-import {removeDuplicates, notif, leaveGame, removePlayer, fromStorage, toStorage} from '../../../lib/utils';
+import {inArray, removeDuplicates, notif, leaveGame, removePlayer, fromStorage, toStorage} from '../../../lib/utils';
 import Tenor from '../../../lib/img/tenor.gif';
 
 class Game extends Component {
@@ -369,42 +369,50 @@ class Game extends Component {
         channel.bind("App\\Events\\UserSentCard", data => {
             console.log("UserSentCard::: ", data);
 
-            /* console.log("+++++++++++++");
-            console.log(data);
-            console.log("+++++++++++++"); */
+            let userId           = this.state.user.id;
+            let handCards        = this.state.handCards;
+            let cardsInfoOpen    = this.state.cardsInfoOpen;
+            let currWhiteCards   = this.state.currWhiteCards;
+            let confirmedPlayers = this.state.confirmedPlayers;
+            
+            let incomingUserId = data['user_id'];
+            let incomingCards = JSON.parse(data['cards']); 
+            let incomingUserAlreadySentCards = data['alreadySent'];
 
-            let handCards = this.state.handCards;
 
-            let handCard = {
-                user_id: data['user_id'],
-                cards: JSON.parse(data['cards'])
-            }
+            let incomingCardsIds = [];
 
-            /* console.log("+++++++++++++");
-            console.log(handCard);
-            console.log("+++++++++++++");
+            incomingCards.forEach((card)=> {
+                incomingCardsIds.push(card.id);
+            });
 
-            handCards.push(handCard);
-
-            console.log("@@@@@@@@@@@@@@@@@");
-            console.log(handCards);
-            console.log("@@@@@@@@@@@@@@@@@"); */
-
-            handCards = removeDuplicates(handCards);
-
-            if(data['alreadySent'] == '1')
+            if(incomingUserAlreadySentCards && userId == incomingUserId)
             {
                 notif({msg: "You already sent white card(s) for this black card.", type: "pink"});
-                
+
+                currWhiteCards = currWhiteCards.map(x => {
+                    x.active          = false;
+                    x.alreadySelected = inArray(x.id, incomingCardsIds) ? true : false;
+                    return x;
+                });
+
                 this.setState({
-                    cardsAlreadySent: true
+                    currWhiteCards: currWhiteCards
                 });
             }
 
-            let confirmedPlayers = this.state.confirmedPlayers;
-            let showHandCards =(handCards.length == confirmedPlayers) && confirmedPlayers ? true : false;
+            let handCard = {
+                user_id: incomingUserId,
+                cards: incomingCards
+            }
 
-            if(showHandCards && this.state.cardsInfoOpen)
+            handCards.push(handCard);
+            handCards = removeDuplicates(handCards);
+            let cardsSentThisHand = handCards.length;
+
+            let showHandCards = (cardsSentThisHand == confirmedPlayers) && confirmedPlayers ? true : false;
+
+            if(showHandCards && cardsInfoOpen)
             {
                 this.toggleCardsInfo(false);
             }
@@ -732,9 +740,6 @@ class Game extends Component {
         return (<div key={"game-paperwhite-player-div-" + player.id} >{firstPart} {link}</div>);
     }
 
-    yesAction = () => {
-        console.log("this was called");
-    }
 
     pingPlayersToConfirm = async () => {
         

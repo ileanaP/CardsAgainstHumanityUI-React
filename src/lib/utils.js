@@ -7,15 +7,24 @@ import { createBrowserHistory } from "history";
 const history = createBrowserHistory();
 
 export function removeDuplicates(arr) {
-    arr = arr.filter((thing, index, self) =>
-                index === self.findIndex((t) => (
-                    t.place === thing.place && t.name === thing.name
-                ))
-            )
 
-    return arr;
+    let uniqueArray = arr.filter((thing, index) => {
+        const _thing = JSON.stringify(thing);
+        return index === arr.findIndex(obj => {
+          return JSON.stringify(obj) === _thing;
+        });
+      });
+
+    return uniqueArray;
 }
 
+export function inArray(needle, haystack) {
+    var length = haystack.length;
+    for(var i = 0; i < length; i++) {
+        if(haystack[i] == needle) return true;
+    }
+    return false;
+}
 
 export async function notif(params)
 {
