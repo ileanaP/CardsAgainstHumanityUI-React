@@ -57,6 +57,7 @@ class GameBoxes extends Component {
             <Fragment>
                 {this.state.boxes.map((box, idx) => {
                     let btnHref = fromStorage('loggedIn') ? "/game/" + box.id : "";
+                    console.log("~~~" + fromStorage('loggedIn') + "~~~");
                     return (
                         <Box clone pt={2} pr={1} pb={1} pl={2} width={300} height={0}
                                     className={classes.balanceBox}>

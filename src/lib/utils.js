@@ -97,6 +97,24 @@ export async function leaveGame()
     });
 }
 
+export function setupUserData(data)
+{
+    let localData = {
+        id: data['id'],
+        name: data['name'],
+        email: data['email'],
+        token: data['token'],
+        game: (data['in_game'] !== undefined ? data['in_game'] : null)
+    };
+    
+    console.log("~~~~");
+    console.log(localData);
+    console.log("~~~~");
+
+    toStorage('userData', JSON.stringify(localData));
+    toStorage('loggedIn', 'true');
+}
+
 export function fromStorage(stuff)
 {
     return JSON.parse(localStorage.getItem(stuff));
@@ -106,3 +124,4 @@ export function toStorage(stuff, data)
 {
     localStorage.setItem(stuff, data);
 }
+

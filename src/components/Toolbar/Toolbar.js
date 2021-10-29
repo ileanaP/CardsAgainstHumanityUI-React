@@ -10,7 +10,9 @@ const toolbar = props => (
             <div className="toolbar-tgl-btn">
                 <DrawerToggleButton click = {props.drawerClickHandler}/>
             </div>
-            <div className="toolbar-logo"><a href="/">Meh Logo</a></div>
+            <div className="toolbar-logo">
+                <a href="/"><img src="/logo.svg" height="56px"/></a>
+            </div>
             <div className="spacer"></div>
             <div className="toolbar-nav-items">
                 <NavLinks click={undefined}/>

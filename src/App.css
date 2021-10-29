@@ -1,13 +1,13 @@
 html, body {
     position: relative;
-    background: lemonchiffon;
+    background: #F0E594;
 }
 
 .content {
     background: purple;
     padding-top: 106px;
     padding-left: 32px;
-    background: lemonchiffon;
+    background: #F0E594;
    /* width: 100%;*/
 }
 

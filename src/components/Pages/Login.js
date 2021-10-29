@@ -9,7 +9,7 @@ import { Redirect } from 'react-router-dom';
 import Btn from '../addons/Btn';
 import NotifMsg from '../addons/NotifMsg';
 import { styles } from '../../lib/styles.js';
-import { fromStorage, toStorage } from '../../lib/utils';
+import { fromStorage, setupUserData } from '../../lib/utils';
 import Axios from 'axios';
 //import Cookies from 'universal-cookie';
 import WaitRedirect from '../addons/WaitRedirect';
@@ -46,18 +46,7 @@ class Login extends Component {
 
         await Axios.post(global.api + 'login', data)
             .then(data => { 
-                data = data['data'];
-
-                let localData = {
-                    id: data['id'],
-                    name: data['name'],
-                    email: data['email'],
-                    token: data['token'],
-                    game: data['in_game']
-                };
-                
-                toStorage('userData', JSON.stringify(localData));
-                toStorage('loggedIn', 'true');
+                setupUserData(data['data']);
 
                 /* const cookies = new Cookies();
                 cookies.set('username', data['name'], { path: '/' });

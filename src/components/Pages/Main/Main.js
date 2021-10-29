@@ -33,12 +33,12 @@ class Main extends Component {
 
         switch(true) {
             case game == null && loggedIn:
-                action = <Btn bgColor={"indigo"} text={"New Game"} 
+                action = <Btn bgColor={"deepgreen"} text={"New Game"} 
                             link={"/newgame"}/>
                 break;
             case game != null && loggedIn:
                 action = <Fragment>
-                            <Btn bgColor={"pink"} text={"Already In Game; Enter"}
+                            <Btn bgColor={"deepgreen"} text={"Already In Game; Enter"}
                                  link={"/game/" + game}/>
                             <Btn bgColor={"gray"} text={"Leave Game"}
                                  onClick={() => {leaveGame()}}/>
@@ -46,7 +46,7 @@ class Main extends Component {
                 disabled = true;
                 break;
             default:
-                action = <Btn bgColor={"indigo"} text={"Login to enter game"} link={'login'}/>
+                action = <Btn bgColor={"deepgreen"} text={"Login to enter game"} link={'login'}/>
           }
 
         const { classes } = this.props;

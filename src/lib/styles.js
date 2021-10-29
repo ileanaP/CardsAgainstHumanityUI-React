@@ -57,12 +57,12 @@ export const styles = {
         backgroundColor: 'purple',
         color: 'whitesmoke'
     },
-    pinkBg: {
-        backgroundColor: 'deeppink',
+    deepgreenBg: {
+        backgroundColor: '#295F12',
         color: 'whitesmoke'
     },
     darkredBg: {
-        backgroundColor: 'darkred',
+        backgroundColor: '#773009',
         color: 'whitesmoke',
         '&:hover': {
             backgroundColor: 'whitesmoke',
@@ -189,7 +189,7 @@ export const styles = {
     toggleButtonLine: {
         width: "30px",
         height: "3px",
-        backgroundColor: "#00ffff"
+        backgroundColor: "#CDB46C"
     },
     drawer: {
         backgroundColor: "wheat",

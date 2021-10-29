@@ -95,7 +95,7 @@ class App extends Component {
                   <Switch>
                   <Route path="/login" render={() => <Login toggleLoginState={this.toggleLoginState} />}/>
                     <Route path="/logout" render={() => <Logout toggleLoginState={this.toggleLoginState} />}/>
-                    <Route path="/register" exact component={Register}/>
+                    <Route path="/register" render={() => <Register toggleLoginState={this.toggleLoginState} />}/>
                     <Route path="/game/:id"  render={(props) => 
                         <Game {...props} leaveGame={this.leaveGame} endGame={this.endGame}/> }/>
                     <Route exact path="/" render={() => <Main leaveGame={this.leaveGame}/>}/>
